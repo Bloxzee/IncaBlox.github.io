@@ -257,7 +257,7 @@ function handleAuthButtons() {
         // User is logged in
         authButtonsDiv.innerHTML = `
             <button class="logout-btn" onclick="logout()">Logout</button>
-            <div>Bux: ${bux || '-'}</div>
+            <div>Bux: ${bux ? formatNumber(bux) : '-'}</div>
         `;
     } else {
         // User is not logged in
@@ -275,30 +275,15 @@ function logout() {
     handleAuthButtons(); // Update buttons after logout
 }
 
-// Counter Animation
-function animateCounter(elementId, endValue) {
-    const element = document.getElementById(elementId);
-    let startValue = 0;
-    const duration = 2500; // Animation duration in milliseconds (2.5 seconds)
-    const stepTime = duration / endValue;
-    const timer = setInterval(() => {
-        startValue += Math.ceil(endValue / (duration / stepTime));
-        if (startValue >= endValue) {
-            startValue = endValue;
-            clearInterval(timer);
-        }
-        element.innerText = startValue.toLocaleString();
-    }, stepTime);
+// Function to format numbers with commas
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 // Call the function to handle authentication buttons on page load
 document.addEventListener('DOMContentLoaded', () => {
     handleAuthButtons();
-
-    // Counter animation
-    animateCounter('total-accounts', 1234567);
-    animateCounter('games-played', 89101111);
-    animateCounter('forum-posts', 567890);
 });
+
     </script>
     </html>
