@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IncaBlox Games</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #ff6600; /* Accent color for links */
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Header Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #232323; /* Darker navbar */
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav-links ul {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #e0e0e0; /* Light text color */
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-buttons .login-btn,
+        .auth-buttons .signup-btn {
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .auth-buttons .login-btn {
+            background-color: #444;
+            color: #e0e0e0;
+        }
+
+        .auth-buttons .signup-btn {
+            background-color: #ff6600;
+            color: #fff;
+        }
+
+        .auth-buttons .logout-btn {
+            background-color: #d32f2f; /* Red background */
+            color: #fff;
+        }
+
+        /* Games Page Styles */
+        .games-content {
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .games-content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .games-content p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .game-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .game-card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .game-card img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .game-card h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .game-card p {
+            font-size: 1em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-card .green-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #232323;
+            color: #e0e0e0;
+            padding: 20px 0;
+            text-align: center;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .footer p {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="IncaBlox Logo">
+        </div>
+        <nav class="nav-links">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="Games">Games</a></li>
+                <li><a href="Search">Search</a></li>
+                <li><a href="Profile">Profile</a></li>
+                <li><a href="Bux">Bux</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+        </div>
+    </header>
+
+    <!-- Games Page Content -->
+    <main class="games-content">
+        <h1>Explore Games</h1>
+        <p>Discover exciting games and adventures. Play your favorite ones or find new ones to enjoy.</p>
+        <div class="game-list">
+            <!-- Example game cards -->
+            <div class="game-card">
+                <img src="game-1.webp" alt="Game 1">
+                <h2>SFOTH: IV</h2>
+                <p><span class="green-dot"></span>Active:&nbsp;<span id="game-1-count"></span></p>
+            </div>
+            <div class="game-card">
+                <img src="game-2.webp" alt="Game 2">
+                <h2>A Happy Home</h2>
+                <p><span class="green-dot"></span>Active:&nbsp;<span id="game-2-count"></span></p>
+            </div>
+            <!-- Add more game cards as needed -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 IncaBlox. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Dynamic Counters and Navigation Handling -->
+    <script>
+        // Function to generate a random number between min and max
+        function getRandomCount(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Set random counts for each game card
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('game-1-count').textContent = getRandomCount(5, 9);
+            document.getElementById('game-2-count').textContent = getRandomCount(5, 9);
+        });
+
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            let expires = `expires=${d.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
+
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        // Check if username cookie exists and handle accordingly
+        document.addEventListener('DOMContentLoaded', () => {
+            if (getCookie('username')) {
+                deleteCookie('username');
+                alert('If you wanna try being slick and finding bugs, better try harder');
+            }
+        });
+    </script>
+</body>
+
+</html>
