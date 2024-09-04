@@ -132,17 +132,22 @@
         .game-card p {
             font-size: 1em;
             margin-bottom: 10px;
+        }
+
+        .active-counter {
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2em;
+            color: #e0e0e0;
         }
 
-        .game-card .green-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #00ff00;
+        .active-counter .green-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff00; /* Green dot */
             border-radius: 50%;
-            margin-right: 5px;
+            margin-left: 10px;
         }
 
         /* Footer Styles */
@@ -171,15 +176,14 @@
         <nav class="nav-links">
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="games">Games</a></li>
-                <li><a href="search">Search</a></li>
-                <li><a href="profile">Profile</a></li>
-                <li><a href="bux">Bux</a></li>
+                <li><a href="Games">Games</a></li>
+                <li><a href="Search">Search</a></li>
+                <li><a href="Profile">Profile</a></li>
+                <li><a href="Bux">Bux</a></li>
             </ul>
         </nav>
-        <div class="auth-buttons">
-            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+        <div class="auth-buttons" id="auth-buttons">
+            <!-- Buttons will be inserted here by JavaScript -->
         </div>
     </header>
 
@@ -192,12 +196,12 @@
             <div class="game-card">
                 <img src="game-1.webp" alt="Game 1">
                 <h2>SFOTH: IV</h2>
-                <p><span class="green-dot"></span>Active:&nbsp;<span id="game-1-count"></span></p>
+                <p class="active-counter">Active: 5 <span class="green-dot"></span></p>
             </div>
             <div class="game-card">
-                <img src="game-2.webp" alt="Game 2">
-                <h2>A Happy Home</h2>
-                <p><span class="green-dot"></span>Active:&nbsp;<span id="game-2-count"></span></p>
+                <img src="game2-thumbnail.png" alt="Game 2">
+                <h2>Game 2</h2>
+                <p class="active-counter">Active: 8 <span class="green-dot"></span></p>
             </div>
             <!-- Add more game cards as needed -->
         </div>
@@ -208,19 +212,8 @@
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript for Dynamic Counters and Navigation Handling -->
+    <!-- JavaScript for Cookie Handling and Counter Animation -->
     <script>
-        // Function to generate a random number between min and max
-        function getRandomCount(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        // Set random counts for each game card
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('game-1-count').textContent = getRandomCount(5, 9);
-            document.getElementById('game-2-count').textContent = getRandomCount(5, 9);
-        });
-
         // Function to get a cookie by name
         function getCookie(name) {
             const value = `; ${document.cookie}`;
@@ -241,12 +234,56 @@
             setCookie(name, '', -1);
         }
 
-        // Check if username cookie exists and handle accordingly
-        document.addEventListener('DOMContentLoaded', () => {
-            if (getCookie('username')) {
-                deleteCookie('username');
-                alert('If you wanna try being slick and finding bugs, better try harder');
+        // Function to handle authentication buttons
+        function handleAuthButtons() {
+            const username = getCookie('username');
+            const bux = getCookie('bux');
+            const authButtonsDiv = document.getElementById('auth-buttons');
+
+            if (username) {
+                // User is logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+                `;
+            } else {
+                // User is not logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+                `;
             }
+        }
+
+        // Logout function
+        function logout() {
+            deleteCookie('username');
+            deleteCookie('bux');
+            handleAuthButtons(); // Update buttons after logout
+        }
+
+        // Function to format numbers with commas
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Generate random count between 5 and 9
+        function getRandomCount() {
+            return Math.floor(Math.random() * 5) + 5;
+        }
+
+        // Set active user counts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            handleAuthButtons();
+
+            const counters = document.querySelectorAll('.active-counter');
+            counters.forEach(counter => {
+                const randomCount = getRandomCount();
+                counter.textContent = `Active: ${randomCount} `;
+                const greenDot = document.createElement('span');
+                greenDot.className = 'green-dot';
+                counter.appendChild(greenDot);
+            });
         });
     </script>
 </body>
