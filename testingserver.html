@@ -257,7 +257,7 @@ function handleAuthButtons() {
         // User is logged in
         authButtonsDiv.innerHTML = `
             <button class="logout-btn" onclick="logout()">Logout</button>
-            <div>Bux: ${bux ? formatNumber(bux) : '-'}</div>
+            <div>Bux: R$${bux ? formatNumber(bux) : '-'}</div>
         `;
     } else {
         // User is not logged in
