@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IncaBlox - Profile</title>
+    <title>IncaBlox Profile</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -85,6 +85,10 @@
         .auth-buttons .logout-btn {
             background-color: #d32f2f;
             color: #fff;
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
         }
 
         /* Profile Page Styles */
@@ -146,9 +150,8 @@
                 <li><a href="Bux">Bux</a></li>
             </ul>
         </nav>
-        <div class="auth-buttons">
-            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+        <div class="auth-buttons" id="authButtons">
+            <!-- Buttons will be dynamically inserted here -->
         </div>
     </header>
 
@@ -175,6 +178,37 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        }
+
+        // Function to update the nav based on login status
+        function updateNav() {
+            const username = getCookie('username');
+            const bux = getCookie('bux');
+            const authButtons = document.getElementById('authButtons');
+
+            if (username) {
+                authButtons.innerHTML = `
+                    <p style="margin: 0; padding-right: 10px;"><strong>Bux:</strong> ${bux !== undefined ? bux : '-'}</p>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                `;
+            } else {
+                authButtons.innerHTML = `
+                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+                `;
+            }
+        }
+
+        // Logout function
+        function logout() {
+            deleteCookie('username');
+            deleteCookie('bux');
+            window.location.href = '/';
+        }
+
         // Redirect to login if no username cookie is found
         document.addEventListener('DOMContentLoaded', () => {
             const username = getCookie('username');
@@ -185,6 +219,7 @@
             } else {
                 document.getElementById('username').textContent = username;
                 document.getElementById('bux').textContent = bux !== undefined ? bux : '-';
+                updateNav();
             }
         });
     </script>
