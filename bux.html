@@ -99,51 +99,46 @@
             margin-bottom: 20px;
         }
 
-        .bux-form {
-            margin: 0 auto;
+        .bux-input {
+            margin: 0 auto 30px auto;
             max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
-        .bux-form input[type="number"] {
-            width: 94.5%;
+        .bux-input input[type="number"] {
+            width: 100%;
             padding: 10px;
             border: 1px solid #333;
             background-color: #1e1e1e;
             color: #e0e0e0;
             font-size: 1.2em;
+            box-sizing: border-box;
         }
 
-        .bux-form button {
-            padding: 10px;
+        .bux-button {
+            padding: 10px 20px;
             border: none;
+            background-color: #ff6600;
+            color: #fff;
             font-size: 1.2em;
             cursor: pointer;
             font-weight: bold;
-            background-color: #ff6600; /* Accent color for button */
-            color: #fff;
+            transition: background-color 0.3s ease;
         }
 
-        .bux-form button:disabled {
-            background-color: #555; /* Grey background for disabled state */
-            cursor: not-allowed;
+        .bux-button:disabled {
+            background-color: #555; /* Grey out color */
         }
 
-        .bux-form button.no-hover {
-            transition: none; /* Remove hover effect */
+        .success-message {
+            display: none;
+            color: #4caf50; /* Green color */
+            font-weight: bold;
+            margin-top: 10px;
         }
 
         .price-calculator {
             margin-top: 10px;
-            font-size: 1.1em;
-            color: #e0e0e0;
-        }
-
-        .success-message {
-            color: #4caf50; /* Green text */
-            margin-top: 10px;
+            font-size: 1.2em;
         }
 
         /* Footer Styles */
@@ -185,13 +180,13 @@
 
     <!-- Bux Page Content -->
     <main class="bux-content">
-        <h1>Purchase Bux</h1>
-        <div class="bux-form">
-            <input type="number" id="buxAmount" placeholder="Enter amount of Bux" min="1">
-            <button id="addBuxButton" class="no-hover">Add Bux</button>
-            <div id="priceCalculator" class="price-calculator">Price: $0.00</div>
-            <div id="successMessage" class="success-message" style="display: none;"><bold>Purchase Complete</bold></div>
+        <h1>Add Bux to Your Account</h1>
+        <div class="bux-input">
+            <input type="number" id="buxAmount" placeholder="Enter amount" min="1" step="1">
         </div>
+        <button id="addBuxButton" class="bux-button">Add Bux</button>
+        <div id="successMessage" class="success-message">Purchase Complete</div>
+        <div id="priceCalculator" class="price-calculator">Price: $0.00</div>
     </main>
 
     <!-- Footer -->
@@ -199,80 +194,81 @@
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript for Bux Handling -->
+    <!-- JavaScript for Bux Page -->
     <script>
-// Function to get a cookie by name
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
 
-// Function to set a cookie
-function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-    let expires = `expires=${d.toUTCString()}`;
-    document.cookie = `${name}=${value}; ${expires}; path=/`;
-}
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            let expires = `expires=${d.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
 
-// Function to delete a cookie
-function deleteCookie(name) {
-    setCookie(name, '', -1);
-}
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
 
-// Function to check if the user is logged in
-function checkLogin() {
-    const username = getCookie('username');
-    if (!username) {
-        window.location.href = '/login';
-    }
-}
+        // Function to check if the user is logged in
+        function checkLogin() {
+            const username = getCookie('username');
+            if (!username) {
+                window.location.href = '/login';
+            }
+        }
 
-// Function to handle Add Bux button click
-function handleAddBux() {
-    const addBuxButton = document.getElementById('addBuxButton');
-    const buxAmountInput = document.getElementById('buxAmount');
-    const buxAmount = parseInt(buxAmountInput.value, 10);
+        // Function to handle Add Bux button click
+        function handleAddBux() {
+            const addBuxButton = document.getElementById('addBuxButton');
+            const buxAmountInput = document.getElementById('buxAmount');
+            const buxAmount = parseInt(buxAmountInput.value, 10);
 
-    if (isNaN(buxAmount) || buxAmount <= 0) {
-        alert('Please enter a valid amount.');
-        return;
-    }
+            if (isNaN(buxAmount) || buxAmount <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
 
-    addBuxButton.disabled = true;
-    addBuxButton.style.backgroundColor = '#555'; // Grey out button
+            addBuxButton.disabled = true;
+            addBuxButton.style.backgroundColor = '#555'; // Grey out button
 
-    setTimeout(() => {
-        const currentBux = parseInt(getCookie('bux'), 10) || 0;
-        const newBuxAmount = currentBux + buxAmount;
-        setCookie('bux', newBuxAmount, 4); // Update cookie with new Bux amount
+            setTimeout(() => {
+                const currentBux = parseInt(getCookie('bux'), 10) || 0;
+                const newBuxAmount = currentBux + buxAmount;
+                setCookie('bux', newBuxAmount, 4); // Update cookie with new Bux amount
 
-        addBuxButton.disabled = false;
-        addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
-        const successMessage = document.getElementById('successMessage');
-        successMessage.style.display = 'block'; // Show the success message
-        updatePriceCalculator(); // Update the price calculator
-    }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
-}
+                addBuxButton.disabled = false;
+                addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block'; // Show the success message
+                updatePriceCalculator(); // Update the price calculator
+            }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
+        }
 
-// Function to update price calculator
-function updatePriceCalculator() {
-    const buxAmount = parseInt(document.getElementById('buxAmount').value, 10);
-    const priceInUSD = (buxAmount * 0.01).toFixed(2);
-    document.getElementById('priceCalculator').innerText = `Price: $${priceInUSD}`;
-}
+        // Function to update price calculator
+        function updatePriceCalculator() {
+            const buxAmount = parseInt(document.getElementById('buxAmount').value, 10);
+            const priceInUSD = (buxAmount * 0.01).toFixed(2);
+            document.getElementById('priceCalculator').innerText = `Price: $${priceInUSD}`;
+        }
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', () => {
-    checkLogin(); // Check if the user is logged in
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLogin(); // Check if the user is logged in
 
-    // Set up event listener for Add Bux button
-    document.getElementById('addBuxButton').addEventListener('click', handleAddBux);
+            // Set up event listener for Add Bux button
+            document.getElementById('addBuxButton').addEventListener('click', handleAddBux);
 
-    // Set up event listener for input change to update price calculator
-    document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
-});
+            // Set up event listener for input change to update price calculator
+            document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
+        });
+    </script>
+</body>
 
-        </script>
 </html>
