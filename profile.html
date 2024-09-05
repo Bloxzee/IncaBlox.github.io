@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,8 @@
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -27,7 +28,7 @@
 
         a {
             text-decoration: none;
-            color: #ff6600;
+            color: #ff6600; /* Accent color for links */
         }
 
         ul {
@@ -41,7 +42,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
-            background-color: #232323;
+            background-color: #232323; /* Darker navbar */
         }
 
         .logo img {
@@ -54,18 +55,19 @@
         }
 
         .nav-links a {
-            color: #e0e0e0;
+            color: #e0e0e0; /* Light text color */
             font-weight: bold;
         }
 
         .auth-buttons {
             display: flex;
-            align-items: center;
             gap: 10px;
+            align-items: center;
         }
 
         .auth-buttons .login-btn,
-        .auth-buttons .signup-btn {
+        .auth-buttons .signup-btn,
+        .auth-buttons .logout-btn {
             padding: 5px 15px;
             border: none;
             cursor: pointer;
@@ -83,34 +85,36 @@
         }
 
         .auth-buttons .logout-btn {
-            background-color: #d32f2f;
+            background-color: #d32f2f; /* Red background */
             color: #fff;
-            padding: 5px 15px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
         }
 
-        .bux-display {
-            font-weight: bold;
+        .auth-buttons .bux-display {
             color: #e0e0e0;
-            margin-right: 10px;
         }
 
-        /* Profile Content */
+        /* Profile Page Styles */
         .profile-content {
-            padding: 50px 20px;
-            text-align: center;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .profile-content h1 {
-            font-size: 2.5em;
+            font-size: 2em;
             margin-bottom: 20px;
         }
 
         .profile-content p {
             font-size: 1.2em;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+
+        .profile-content .user-info {
+            font-size: 1.2em;
         }
 
         /* Footer Styles */
@@ -119,9 +123,7 @@
             color: #e0e0e0;
             padding: 20px 0;
             text-align: center;
-            position: absolute;
-            width: 100%;
-            bottom: 0;
+            margin-top: auto;
         }
 
         .footer p {
@@ -129,6 +131,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="navbar">
@@ -145,18 +148,15 @@
             </ul>
         </nav>
         <div class="auth-buttons">
-            <span id="buxDisplay" class="bux-display"></span>
-            <button id="logoutButton" class="logout-btn" style="display: none;">Logout</button>
-            <button id="loginButton" class="login-btn">Login</button>
-            <button id="signupButton" class="signup-btn">Sign Up</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div class="bux-display">Bux: ฿<span id="buxAmount">-</span></div>
         </div>
     </header>
 
     <!-- Profile Page Content -->
     <main class="profile-content">
-        <h1>Welcome, <span id="usernameDisplay"></span>!</h1>
-        <p>This is your profile page.</p>
-        <!-- Additional profile content can be added here -->
+        <h1>Welcome, <span id="usernameDisplay">User</span></h1>
+        <p class="user-info">Your Bux balance: ฿<span id="buxBalance">0</span></p>
     </main>
 
     <!-- Footer -->
@@ -164,7 +164,6 @@
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript for Handling Authentication and Profile Data -->
     <script>
         // Function to get a cookie by name
         function getCookie(name) {
@@ -173,44 +172,32 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
-        // Function to redirect to login if not logged in
-        function redirectToLoginIfNotLoggedIn() {
-            if (!getCookie('username')) {
-                window.location.href = '/login';
-            }
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         }
 
-        // Function to handle authentication display
-        function handleAuthDisplay() {
+        // Function to logout
+        function logout() {
+            deleteCookie('username');
+            deleteCookie('bux');
+            window.location.href = '/login';
+        }
+
+        // Display user info on the profile page
+        document.addEventListener('DOMContentLoaded', () => {
             const username = getCookie('username');
             const bux = getCookie('bux') || '-';
 
-            if (username) {
-                document.getElementById('usernameDisplay').textContent = username;
-                document.getElementById('buxDisplay').textContent = `Bux: ฿${bux}`;
-                document.getElementById('loginButton').style.display = 'none';
-                document.getElementById('signupButton').style.display = 'none';
-                document.getElementById('logoutButton').style.display = 'block';
+            if (!username) {
+                window.location.href = '/login';
             } else {
-                document.getElementById('logoutButton').style.display = 'none';
+                document.getElementById('usernameDisplay').textContent = username;
+                document.getElementById('buxBalance').textContent = bux;
+                document.getElementById('buxAmount').textContent = bux;
             }
-        }
-
-        // Function to delete cookies
-        function deleteCookies() {
-            document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            document.cookie = 'bux=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            window.location.href = '/';
-        }
-
-        // Event listener for logout button
-        document.getElementById('logoutButton').addEventListener('click', deleteCookies);
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', () => {
-            redirectToLoginIfNotLoggedIn();
-            handleAuthDisplay();
         });
     </script>
 </body>
+
 </html>
