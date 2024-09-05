@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IncaBlox Profile</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #ff6600;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Header Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #232323;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav-links ul {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-buttons .login-btn,
+        .auth-buttons .signup-btn {
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .auth-buttons .login-btn {
+            background-color: #444;
+            color: #e0e0e0;
+        }
+
+        .auth-buttons .signup-btn {
+            background-color: #ff6600;
+            color: #fff;
+        }
+
+        .auth-buttons .logout-btn {
+            background-color: #d32f2f;
+            color: #fff;
+        }
+
+        /* Profile Page Styles */
+        .profile-content {
+            padding: 50px 20px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .profile-content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .profile-content p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .profile-info {
+            margin: 20px auto;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            text-align: left;
+        }
+
+        .profile-info p {
+            margin-bottom: 10px;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #232323;
+            color: #e0e0e0;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="IncaBlox Logo">
+        </div>
+        <nav class="nav-links">
+            <ul>
+                <li><a href="Home">Home</a></li>
+                <li><a href="Games">Games</a></li>
+                <li><a href="Search">Search</a></li>
+                <li><a href="Profile">Profile</a></li>
+                <li><a href="Bux">Bux</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+        </div>
+    </header>
+
+    <!-- Profile Page Content -->
+    <main class="profile-content">
+        <h1>Welcome to Your Profile</h1>
+        <div class="profile-info">
+            <p><strong>Username:</strong> <span id="username"></span></p>
+            <p><strong>Bux:</strong> <span id="bux"></span></p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 IncaBlox. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Profile Handling -->
+    <script>
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Redirect to login if no username cookie is found
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = getCookie('username');
+            const bux = getCookie('bux');
+
+            if (!username) {
+                window.location.href = '/login';
+            } else {
+                document.getElementById('username').textContent = username;
+                document.getElementById('bux').textContent = bux !== undefined ? bux : '-';
+            }
+        });
+    </script>
+</body>
+
+</html>
