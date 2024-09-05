@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,6 +60,7 @@
 
         .auth-buttons {
             display: flex;
+            align-items: center;
             gap: 10px;
         }
 
@@ -91,11 +91,16 @@
             font-weight: bold;
         }
 
-        /* Profile Page Styles */
+        .bux-display {
+            font-weight: bold;
+            color: #e0e0e0;
+            margin-right: 10px;
+        }
+
+        /* Profile Content */
         .profile-content {
             padding: 50px 20px;
             text-align: center;
-            flex: 1;
         }
 
         .profile-content h1 {
@@ -105,20 +110,7 @@
 
         .profile-content p {
             font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .profile-info {
-            margin: 20px auto;
-            max-width: 400px;
-            padding: 20px;
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-            text-align: left;
-        }
-
-        .profile-info p {
-            margin-bottom: 10px;
+            margin-bottom: 30px;
         }
 
         /* Footer Styles */
@@ -127,6 +119,9 @@
             color: #e0e0e0;
             padding: 20px 0;
             text-align: center;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
         }
 
         .footer p {
@@ -134,7 +129,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Header -->
     <header class="navbar">
@@ -143,25 +137,26 @@
         </div>
         <nav class="nav-links">
             <ul>
-                <li><a href="Home">Home</a></li>
+                <li><a href="/">Home</a></li>
                 <li><a href="Games">Games</a></li>
                 <li><a href="Search">Search</a></li>
                 <li><a href="Profile">Profile</a></li>
                 <li><a href="Bux">Bux</a></li>
             </ul>
         </nav>
-        <div class="auth-buttons" id="authButtons">
-            <!-- Buttons will be dynamically inserted here -->
+        <div class="auth-buttons">
+            <span id="buxDisplay" class="bux-display"></span>
+            <button id="logoutButton" class="logout-btn" style="display: none;">Logout</button>
+            <button id="loginButton" class="login-btn">Login</button>
+            <button id="signupButton" class="signup-btn">Sign Up</button>
         </div>
     </header>
 
     <!-- Profile Page Content -->
     <main class="profile-content">
-        <h1>Welcome to Your Profile</h1>
-        <div class="profile-info">
-            <p><strong>Username:</strong> <span id="username"></span></p>
-            <p><strong>Bux:</strong> <span id="bux"></span></p>
-        </div>
+        <h1>Welcome, <span id="usernameDisplay"></span>!</h1>
+        <p>This is your profile page.</p>
+        <!-- Additional profile content can be added here -->
     </main>
 
     <!-- Footer -->
@@ -169,7 +164,7 @@
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript for Profile Handling -->
+    <!-- JavaScript for Handling Authentication and Profile Data -->
     <script>
         // Function to get a cookie by name
         function getCookie(name) {
@@ -178,51 +173,44 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
-        // Function to delete a cookie
-        function deleteCookie(name) {
-            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        }
-
-        // Function to update the nav based on login status
-        function updateNav() {
-            const username = getCookie('username');
-            const bux = getCookie('bux');
-            const authButtons = document.getElementById('authButtons');
-
-            if (username) {
-                authButtons.innerHTML = `
-                    <p style="margin: 0; padding-right: 10px;"><strong>Bux:</strong> ${bux !== undefined ? bux : '-'}</p>
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                `;
-            } else {
-                authButtons.innerHTML = `
-                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
-                `;
+        // Function to redirect to login if not logged in
+        function redirectToLoginIfNotLoggedIn() {
+            if (!getCookie('username')) {
+                window.location.href = '/login';
             }
         }
 
-        // Logout function
-        function logout() {
-            deleteCookie('username');
-            deleteCookie('bux');
+        // Function to handle authentication display
+        function handleAuthDisplay() {
+            const username = getCookie('username');
+            const bux = getCookie('bux') || '-';
+
+            if (username) {
+                document.getElementById('usernameDisplay').textContent = username;
+                document.getElementById('buxDisplay').textContent = `Bux: ฿${bux}`;
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('signupButton').style.display = 'none';
+                document.getElementById('logoutButton').style.display = 'block';
+            } else {
+                document.getElementById('logoutButton').style.display = 'none';
+            }
+        }
+
+        // Function to delete cookies
+        function deleteCookies() {
+            document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'bux=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             window.location.href = '/';
         }
 
-        // Redirect to login if no username cookie is found
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = getCookie('username');
-            const bux = getCookie('bux');
+        // Event listener for logout button
+        document.getElementById('logoutButton').addEventListener('click', deleteCookies);
 
-            if (!username) {
-                window.location.href = '/login';
-            } else {
-                document.getElementById('username').textContent = username;
-                document.getElementById('bux').textContent = bux !== undefined ? bux : '-';
-                updateNav();
-            }
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            redirectToLoginIfNotLoggedIn();
+            handleAuthDisplay();
         });
     </script>
 </body>
-
 </html>
