@@ -216,6 +216,11 @@ function deleteCookie(name) {
     setCookie(name, '', -1);
 }
 
+// Function to format numbers with commas
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 // Function to check if the user is logged in
 function checkLogin() {
     const username = getCookie('username');
@@ -239,6 +244,7 @@ function handleAddBux() {
 
     addBuxButton.disabled = true;
     addBuxButton.style.backgroundColor = '#555'; // Grey out button
+    addBuxButton.style.transition = 'none'; // Remove transition
 
     setTimeout(() => {
         const currentBux = parseInt(getCookie('bux'), 10) || 0;
@@ -247,9 +253,11 @@ function handleAddBux() {
 
         addBuxButton.disabled = false;
         addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
+        addBuxButton.style.transition = ''; // Restore transition
         const successMessage = document.getElementById('successMessage');
         successMessage.style.display = 'block'; // Show the success message
         updatePriceCalculator(); // Update the price calculator
+        handleAuthButtons(); // Update Bux display on top right
     }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
 }
 
@@ -260,16 +268,17 @@ function updatePriceCalculator() {
     document.getElementById('priceCalculator').innerText = `Price: $${priceInUSD}`;
 }
 
-// Function to handle authentication buttons
+// Function to handle authentication buttons and Bux display
 function handleAuthButtons() {
     const username = getCookie('username');
+    const bux = getCookie('bux');
     const authButtonsDiv = document.getElementById('auth-buttons');
 
     if (username) {
         // User is logged in
         authButtonsDiv.innerHTML = `
             <button class="logout-btn" onclick="logout()">Logout</button>
-            <div>Bux: ฿${getCookie('bux') || '-'}</div>
+            <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
         `;
     } else {
         // User is not logged in
@@ -297,5 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up event listener for input change to update price calculator
     document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
 });
+
 </script>
 </html>
