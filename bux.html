@@ -197,78 +197,106 @@
     <!-- JavaScript for Bux Page -->
     <script>
         // Function to get a cookie by name
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-        // Function to set a cookie
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            let expires = `expires=${d.toUTCString()}`;
-            document.cookie = `${name}=${value}; ${expires}; path=/`;
-        }
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+}
 
-        // Function to delete a cookie
-        function deleteCookie(name) {
-            setCookie(name, '', -1);
-        }
+// Function to delete a cookie
+function deleteCookie(name) {
+    setCookie(name, '', -1);
+}
 
-        // Function to check if the user is logged in
-        function checkLogin() {
-            const username = getCookie('username');
-            if (!username) {
-                window.location.href = '/login';
-            }
-        }
+// Function to check if the user is logged in
+function checkLogin() {
+    const username = getCookie('username');
+    if (!username) {
+        window.location.href = '/login';
+    } else {
+        handleAuthButtons(); // Ensure authentication buttons are correctly displayed
+    }
+}
 
-        // Function to handle Add Bux button click
-        function handleAddBux() {
-            const addBuxButton = document.getElementById('addBuxButton');
-            const buxAmountInput = document.getElementById('buxAmount');
-            const buxAmount = parseInt(buxAmountInput.value, 10);
+// Function to handle Add Bux button click
+function handleAddBux() {
+    const addBuxButton = document.getElementById('addBuxButton');
+    const buxAmountInput = document.getElementById('buxAmount');
+    const buxAmount = parseInt(buxAmountInput.value, 10);
 
-            if (isNaN(buxAmount) || buxAmount <= 0) {
-                alert('Please enter a valid amount.');
-                return;
-            }
+    if (isNaN(buxAmount) || buxAmount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+    }
 
-            addBuxButton.disabled = true;
-            addBuxButton.style.backgroundColor = '#555'; // Grey out button
+    addBuxButton.disabled = true;
+    addBuxButton.style.backgroundColor = '#555'; // Grey out button
 
-            setTimeout(() => {
-                const currentBux = parseInt(getCookie('bux'), 10) || 0;
-                const newBuxAmount = currentBux + buxAmount;
-                setCookie('bux', newBuxAmount, 4); // Update cookie with new Bux amount
+    setTimeout(() => {
+        const currentBux = parseInt(getCookie('bux'), 10) || 0;
+        const newBuxAmount = currentBux + buxAmount;
+        setCookie('bux', newBuxAmount, 4); // Update cookie with new Bux amount
 
-                addBuxButton.disabled = false;
-                addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
-                const successMessage = document.getElementById('successMessage');
-                successMessage.style.display = 'block'; // Show the success message
-                updatePriceCalculator(); // Update the price calculator
-            }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
-        }
+        addBuxButton.disabled = false;
+        addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
+        const successMessage = document.getElementById('successMessage');
+        successMessage.style.display = 'block'; // Show the success message
+        updatePriceCalculator(); // Update the price calculator
+    }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
+}
 
-        // Function to update price calculator
-        function updatePriceCalculator() {
-            const buxAmount = parseInt(document.getElementById('buxAmount').value, 10);
-            const priceInUSD = (buxAmount * 0.01).toFixed(2);
-            document.getElementById('priceCalculator').innerText = `Price: $${priceInUSD}`;
-        }
+// Function to update price calculator
+function updatePriceCalculator() {
+    const buxAmount = parseInt(document.getElementById('buxAmount').value, 10);
+    const priceInUSD = (buxAmount * 0.01).toFixed(2);
+    document.getElementById('priceCalculator').innerText = `Price: $${priceInUSD}`;
+}
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            checkLogin(); // Check if the user is logged in
+// Function to handle authentication buttons
+function handleAuthButtons() {
+    const username = getCookie('username');
+    const authButtonsDiv = document.getElementById('auth-buttons');
 
-            // Set up event listener for Add Bux button
-            document.getElementById('addBuxButton').addEventListener('click', handleAddBux);
+    if (username) {
+        // User is logged in
+        authButtonsDiv.innerHTML = `
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>Bux: ฿${getCookie('bux') || '-'}</div>
+        `;
+    } else {
+        // User is not logged in
+        authButtonsDiv.innerHTML = `
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/signup" class="signup-btn">Sign Up</a>
+        `;
+    }
+}
 
-            // Set up event listener for input change to update price calculator
-            document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
-        });
-    </script>
-</body>
+// Function to handle logout
+function logout() {
+    deleteCookie('username');
+    deleteCookie('bux');
+    window.location.href = '/';
+}
 
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+    checkLogin(); // Check if the user is logged in
+
+    // Set up event listener for Add Bux button
+    document.getElementById('addBuxButton').addEventListener('click', handleAddBux);
+
+    // Set up event listener for input change to update price calculator
+    document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
+});
+
+</script>
 </html>
