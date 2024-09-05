@@ -108,7 +108,7 @@
         }
 
         .bux-form input[type="number"] {
-            width: 95%;
+            width: 100%;
             padding: 10px;
             border: 1px solid #333;
             background-color: #1e1e1e;
@@ -287,14 +287,25 @@ function handleAddBux() {
     }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
 }
 
+// Function to check if user is logged in
+function checkLoginStatus() {
+    const username = getCookie('username');
+    if (!username) {
+        window.location.href = '/login';
+    }
+}
+
 // Add event listener to Bux amount input
 document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
 
 // Add event listener to Add Bux button
 document.getElementById('addBuxButton').addEventListener('click', handleAddBux);
 
-// Initialize the page with authentication buttons
-document.addEventListener('DOMContentLoaded', handleAuthButtons);
+// Initialize the page with authentication buttons and check login status
+document.addEventListener('DOMContentLoaded', () => {
+    handleAuthButtons();
+    checkLoginStatus();
+});
 
         </script>
         
