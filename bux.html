@@ -92,7 +92,6 @@
         .bux-content {
             padding: 50px 20px;
             text-align: center;
-            flex-grow: 1;
         }
 
         .bux-content h1 {
@@ -103,6 +102,9 @@
         .bux-form {
             margin: 0 auto;
             max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .bux-form input[type="number"] {
@@ -115,24 +117,33 @@
         }
 
         .bux-form button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #ff6600;
+            padding: 10px;
             border: none;
-            color: #fff;
             font-size: 1.2em;
             cursor: pointer;
-            width: 100%;
+            font-weight: bold;
+            background-color: #ff6600; /* Accent color for button */
+            color: #fff;
         }
 
-        .bux-form button:hover {
-            background-color: #e65c00;
+        .bux-form button:disabled {
+            background-color: #555; /* Grey background for disabled state */
+            cursor: not-allowed;
+        }
+
+        .bux-form button.no-hover {
+            transition: none; /* Remove hover effect */
         }
 
         .price-calculator {
             margin-top: 10px;
             font-size: 1.1em;
-            color: #ff6600;
+            color: #e0e0e0;
+        }
+
+        .success-message {
+            color: #4caf50; /* Green text */
+            margin-top: 10px;
         }
 
         /* Footer Styles */
@@ -141,8 +152,9 @@
             color: #e0e0e0;
             padding: 20px 0;
             text-align: center;
-            position: relative;
+            position: absolute;
             width: 100%;
+            bottom: 0;
         }
 
         .footer p {
@@ -173,11 +185,12 @@
 
     <!-- Bux Page Content -->
     <main class="bux-content">
-        <h1>Purchase Bux</h1>
+        <h1>Add Bux to Your Account</h1>
         <div class="bux-form">
-            <input type="number" id="buxInput" placeholder="Enter amount of Bux">
-            <div class="price-calculator" id="priceCalculator">USD: $0.00</div>
-            <button onclick="purchaseBux()">Add Bux</button>
+            <input type="number" id="buxAmount" placeholder="Enter amount of Bux" min="1">
+            <button id="addBuxButton" class="no-hover">Add Bux</button>
+            <div id="priceCalculator" class="price-calculator">Price: $0.00</div>
+            <div id="successMessage" class="success-message" style="display: none;">Purchase Complete</div>
         </div>
     </main>
 
@@ -189,87 +202,87 @@
     <!-- JavaScript for Bux Handling -->
     <script>
         // Function to get a cookie by name
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-        // Function to set a cookie
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            let expires = `expires=${d.toUTCString()}`;
-            document.cookie = `${name}=${value}; ${expires}; path=/`;
-        }
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+}
 
-        // Function to delete a cookie
-        function deleteCookie(name) {
-            setCookie(name, '', -1);
-        }
+// Function to delete a cookie
+function deleteCookie(name) {
+    setCookie(name, '', -1);
+}
 
-        // Function to handle authentication buttons
-        function handleAuthButtons() {
-            const username = getCookie('username');
-            const bux = getCookie('bux');
-            const authButtonsDiv = document.getElementById('auth-buttons');
+// Function to handle authentication buttons
+function handleAuthButtons() {
+    const username = getCookie('username');
+    const bux = getCookie('bux');
+    const authButtonsDiv = document.getElementById('auth-buttons');
 
-            if (username) {
-                // User is logged in
-                authButtonsDiv.innerHTML = `
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
-                `;
-            } else {
-                // User is not logged in
-                authButtonsDiv.innerHTML = `
-                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
-                `;
-            }
-        }
+    if (username) {
+        // User is logged in
+        authButtonsDiv.innerHTML = `
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+        `;
+    } else {
+        // User is not logged in
+        authButtonsDiv.innerHTML = `
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+        `;
+    }
+}
 
-        // Logout function
-        function logout() {
-            deleteCookie('username');
-            deleteCookie('bux');
-            handleAuthButtons(); // Update buttons after logout
-        }
+// Logout function
+function logout() {
+    deleteCookie('username');
+    deleteCookie('bux');
+    handleAuthButtons(); // Update buttons after logout
+}
 
-        // Function to format numbers with commas
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+// Function to format numbers with commas
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
-        // Function to calculate USD from Bux
-        function calculateUSD(buxAmount) {
-            return (buxAmount * 0.01).toFixed(2);
-        }
+// Function to update price calculator
+function updatePriceCalculator() {
+    const buxAmount = document.getElementById('buxAmount').value;
+    const price = buxAmount * 0.01;
+    document.getElementById('priceCalculator').textContent = `Price: $${price.toFixed(2)}`;
+}
 
-        // Update price calculator as user types Bux amount
-        document.getElementById('buxInput').addEventListener('input', function() {
-            const buxAmount = this.value;
-            const usdAmount = calculateUSD(buxAmount);
-            document.getElementById('priceCalculator').textContent = `USD: $${usdAmount}`;
-        });
+// Function to handle Add Bux button click
+function handleAddBux() {
+    const addBuxButton = document.getElementById('addBuxButton');
+    addBuxButton.disabled = true;
+    addBuxButton.style.backgroundColor = '#555'; // Grey out button
 
-        // Function to handle Bux purchase
-        function purchaseBux() {
-            const buxInput = document.getElementById('buxInput').value;
-            if (buxInput > 0) {
-                const currentBux = getCookie('bux') ? parseInt(getCookie('bux')) : 0;
-                const newBux = currentBux + parseInt(buxInput);
-                setCookie('bux', newBux, 4);
-                alert(`Successfully added ${buxInput} Bux to your account.`);
-                handleAuthButtons(); // Update Bux display after purchase
-            } else {
-                alert('Please enter a valid amount of Bux.');
-            }
-        }
+    setTimeout(() => {
+        addBuxButton.disabled = false;
+        addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
+        document.getElementById('successMessage').style.display = 'block';
+    }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
+}
 
-        // Initialize the page with authentication buttons
-        document.addEventListener('DOMContentLoaded', handleAuthButtons);
-    </script>
-</body>
+// Add event listener to Bux amount input
+document.getElementById('buxAmount').addEventListener('input', updatePriceCalculator);
 
+// Add event listener to Add Bux button
+document.getElementById('addBuxButton').addEventListener('click', handleAddBux);
+
+// Initialize the page with authentication buttons
+document.addEventListener('DOMContentLoaded', handleAuthButtons);
+
+        </script>
+        
 </html>
