@@ -62,7 +62,6 @@
         .auth-buttons {
             display: flex;
             gap: 10px;
-            align-items: center;
         }
 
         .auth-buttons .login-btn,
@@ -93,11 +92,7 @@
         .profile-content {
             padding: 50px 20px;
             text-align: center;
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: #1e1e1e;
-            border: 1px solid #333;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            flex-grow: 1;
         }
 
         .profile-content h1 {
@@ -105,9 +100,19 @@
             margin-bottom: 20px;
         }
 
-        .profile-content p {
+        .profile-info {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .profile-info p {
             font-size: 1.2em;
-            margin-bottom: 20px;
+            color: #ccc;
+            margin-bottom: 15px;
         }
 
         /* Footer Styles */
@@ -116,7 +121,9 @@
             color: #e0e0e0;
             padding: 20px 0;
             text-align: center;
-            margin-top: auto;
+            position: relative;
+            width: 100%;
+            bottom: 0;
         }
 
         .footer p {
@@ -147,8 +154,12 @@
 
     <!-- Profile Page Content -->
     <main class="profile-content">
-        <h1>Welcome, <span id="usernameDisplay">User</span></h1>
-        <p class="user-info">Your Bux balance: ฿<span id="buxBalance">0</span></p>
+        <h1>Welcome, <span id="usernameDisplay"></span>!</h1>
+        <div class="profile-info">
+            <p><strong>Username:</strong> <span id="usernameInfo"></span></p>
+            <p><strong>Bux:</strong> <span id="buxInfo"></span></p>
+            <!-- Add more profile information as needed -->
+        </div>
     </main>
 
     <!-- Footer -->
@@ -156,6 +167,7 @@
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
+    <!-- JavaScript for Profile Handling -->
     <script>
         // Function to get a cookie by name
         function getCookie(name) {
@@ -189,12 +201,12 @@
                     <button class="logout-btn" onclick="logout()">Logout</button>
                     <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
                 `;
+                document.getElementById('usernameDisplay').textContent = username;
+                document.getElementById('usernameInfo').textContent = username;
+                document.getElementById('buxInfo').textContent = `฿${bux ? formatNumber(bux) : '-'}`;
             } else {
-                // User is not logged in
-                authButtonsDiv.innerHTML = `
-                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
-                `;
+                // Redirect to login if no username cookie found
+                window.location.href = '/login';
             }
         }
 
@@ -203,7 +215,6 @@
             deleteCookie('username');
             deleteCookie('bux');
             handleAuthButtons(); // Update buttons after logout
-            window.location.href = '/login';
         }
 
         // Function to format numbers with commas
@@ -211,19 +222,8 @@
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Display user info on the profile page
-        document.addEventListener('DOMContentLoaded', () => {
-            handleAuthButtons(); // Initialize authentication buttons
-            const username = getCookie('username');
-            const bux = getCookie('bux') || '-';
-
-            if (!username) {
-                window.location.href = '/login';
-            } else {
-                document.getElementById('usernameDisplay').textContent = username;
-                document.getElementById('buxBalance').textContent = bux;
-            }
-        });
+        // Initialize the page with authentication buttons and profile data
+        document.addEventListener('DOMContentLoaded', handleAuthButtons);
     </script>
 </body>
 
