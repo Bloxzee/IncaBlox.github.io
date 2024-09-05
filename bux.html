@@ -108,7 +108,7 @@
         }
 
         .bux-form input[type="number"] {
-            width: 90%;
+            width: 95%;
             padding: 10px;
             border: 1px solid #333;
             background-color: #1e1e1e;
@@ -264,13 +264,26 @@ function updatePriceCalculator() {
 // Function to handle Add Bux button click
 function handleAddBux() {
     const addBuxButton = document.getElementById('addBuxButton');
+    const buxAmountInput = document.getElementById('buxAmount');
+    const buxAmount = parseInt(buxAmountInput.value, 10);
+    
+    if (isNaN(buxAmount) || buxAmount <= 0) {
+        alert('Please enter a valid amount.');
+        return;
+    }
+
     addBuxButton.disabled = true;
     addBuxButton.style.backgroundColor = '#555'; // Grey out button
 
     setTimeout(() => {
+        const currentBux = parseInt(getCookie('bux'), 10) || 0;
+        const newBuxAmount = currentBux + buxAmount;
+        setCookie('bux', newBuxAmount, 4); // Update cookie with new Bux amount
+
         addBuxButton.disabled = false;
         addBuxButton.style.backgroundColor = '#ff6600'; // Reset button color
         document.getElementById('successMessage').style.display = 'block';
+        updatePriceCalculator(); // Update the price calculator
     }, Math.random() * 1200 + 1000); // 1 to 2.2 seconds
 }
 
