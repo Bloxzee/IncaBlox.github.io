@@ -92,6 +92,7 @@
         .bux-content {
             padding: 50px 20px;
             text-align: center;
+            flex-grow: 1;
         }
 
         .bux-content h1 {
@@ -100,35 +101,38 @@
         }
 
         .bux-form {
-            margin: 0 auto 30px auto;
+            margin: 0 auto;
             max-width: 400px;
-            background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 8px;
-        }
-
-        .bux-form input[type="number"],
-        .bux-form button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: none;
-            font-size: 1.2em;
         }
 
         .bux-form input[type="number"] {
-            background-color: #333;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            background-color: #1e1e1e;
             color: #e0e0e0;
+            font-size: 1.2em;
         }
 
         .bux-form button {
+            margin-top: 20px;
+            padding: 10px 20px;
             background-color: #ff6600;
+            border: none;
             color: #fff;
+            font-size: 1.2em;
             cursor: pointer;
+            width: 100%;
         }
 
         .bux-form button:hover {
-            background-color: #e55a00;
+            background-color: #e65c00;
+        }
+
+        .price-calculator {
+            margin-top: 10px;
+            font-size: 1.1em;
+            color: #ff6600;
         }
 
         /* Footer Styles */
@@ -137,9 +141,8 @@
             color: #e0e0e0;
             padding: 20px 0;
             text-align: center;
-            position: absolute;
+            position: relative;
             width: 100%;
-            bottom: 0;
         }
 
         .footer p {
@@ -170,10 +173,11 @@
 
     <!-- Bux Page Content -->
     <main class="bux-content">
-        <h1>Add Bux to Your Account</h1>
+        <h1>Purchase Bux</h1>
         <div class="bux-form">
-            <input type="number" id="buxAmount" placeholder="Enter Bux amount" min="1">
-            <button onclick="addBux()">Add Bux</button>
+            <input type="number" id="buxInput" placeholder="Enter amount of Bux">
+            <div class="price-calculator" id="priceCalculator">USD: $0.00</div>
+            <button onclick="purchaseBux()">Add Bux</button>
         </div>
     </main>
 
@@ -230,7 +234,6 @@
             deleteCookie('username');
             deleteCookie('bux');
             handleAuthButtons(); // Update buttons after logout
-            window.location.href = '/login';
         }
 
         // Function to format numbers with commas
@@ -238,31 +241,34 @@
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Function to add Bux
-        function addBux() {
-            const buxAmount = parseInt(document.getElementById('buxAmount').value);
-            if (isNaN(buxAmount) || buxAmount < 1) {
-                alert('Please enter a valid Bux amount.');
-                return;
-            }
-
-            let currentBux = parseInt(getCookie('bux'));
-            currentBux = isNaN(currentBux) ? 0 : currentBux;
-            const newBux = currentBux + buxAmount;
-            setCookie('bux', newBux, 4);
-            alert(`Successfully added ฿${buxAmount} to your account!`);
-            handleAuthButtons(); // Update Bux display
+        // Function to calculate USD from Bux
+        function calculateUSD(buxAmount) {
+            return (buxAmount * 0.01).toFixed(2);
         }
 
-        // Redirect to login page if not logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            const username = getCookie('username');
-            if (!username) {
-                window.location.href = '/login';
-            } else {
-                handleAuthButtons();
-            }
+        // Update price calculator as user types Bux amount
+        document.getElementById('buxInput').addEventListener('input', function() {
+            const buxAmount = this.value;
+            const usdAmount = calculateUSD(buxAmount);
+            document.getElementById('priceCalculator').textContent = `USD: $${usdAmount}`;
         });
+
+        // Function to handle Bux purchase
+        function purchaseBux() {
+            const buxInput = document.getElementById('buxInput').value;
+            if (buxInput > 0) {
+                const currentBux = getCookie('bux') ? parseInt(getCookie('bux')) : 0;
+                const newBux = currentBux + parseInt(buxInput);
+                setCookie('bux', newBux, 4);
+                alert(`Successfully added ${buxInput} Bux to your account.`);
+                handleAuthButtons(); // Update Bux display after purchase
+            } else {
+                alert('Please enter a valid amount of Bux.');
+            }
+        }
+
+        // Initialize the page with authentication buttons
+        document.addEventListener('DOMContentLoaded', handleAuthButtons);
     </script>
 </body>
 
