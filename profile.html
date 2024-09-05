@@ -89,32 +89,25 @@
             color: #fff;
         }
 
-        .auth-buttons .bux-display {
-            color: #e0e0e0;
-        }
-
         /* Profile Page Styles */
         .profile-content {
+            padding: 50px 20px;
+            text-align: center;
             max-width: 600px;
             margin: 50px auto;
-            padding: 20px;
             background-color: #1e1e1e;
             border: 1px solid #333;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .profile-content h1 {
-            font-size: 2em;
+            font-size: 2.5em;
             margin-bottom: 20px;
         }
 
         .profile-content p {
             font-size: 1.2em;
             margin-bottom: 20px;
-        }
-
-        .profile-content .user-info {
-            font-size: 1.2em;
         }
 
         /* Footer Styles */
@@ -141,15 +134,14 @@
         <nav class="nav-links">
             <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="Games">Games</a></li>
-                <li><a href="Search">Search</a></li>
-                <li><a href="Profile">Profile</a></li>
-                <li><a href="Bux">Bux</a></li>
+                <li><a href="games">Games</a></li>
+                <li><a href="search">Search</a></li>
+                <li><a href="profile">Profile</a></li>
+                <li><a href="bux">Bux</a></li>
             </ul>
         </nav>
-        <div class="auth-buttons">
-            <button class="logout-btn" onclick="logout()">Logout</button>
-            <div class="bux-display">Bux: ฿<span id="buxAmount">-</span></div>
+        <div class="auth-buttons" id="auth-buttons">
+            <!-- Buttons will be inserted here by JavaScript -->
         </div>
     </header>
 
@@ -172,20 +164,56 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
-        // Function to delete a cookie
-        function deleteCookie(name) {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            let expires = `expires=${d.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
         }
 
-        // Function to logout
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        // Function to handle authentication buttons
+        function handleAuthButtons() {
+            const username = getCookie('username');
+            const bux = getCookie('bux');
+            const authButtonsDiv = document.getElementById('auth-buttons');
+
+            if (username) {
+                // User is logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+                `;
+            } else {
+                // User is not logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+                `;
+            }
+        }
+
+        // Logout function
         function logout() {
             deleteCookie('username');
             deleteCookie('bux');
+            handleAuthButtons(); // Update buttons after logout
             window.location.href = '/login';
+        }
+
+        // Function to format numbers with commas
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         // Display user info on the profile page
         document.addEventListener('DOMContentLoaded', () => {
+            handleAuthButtons(); // Initialize authentication buttons
             const username = getCookie('username');
             const bux = getCookie('bux') || '-';
 
@@ -194,7 +222,6 @@
             } else {
                 document.getElementById('usernameDisplay').textContent = username;
                 document.getElementById('buxBalance').textContent = bux;
-                document.getElementById('buxAmount').textContent = bux;
             }
         });
     </script>
