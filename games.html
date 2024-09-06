@@ -280,7 +280,7 @@
             const counters = document.querySelectorAll('.active-counter');
             counters.forEach(counter => {
                 const randomCount = getRandomCount();
-                counter.textContent = `Active: ${randomCount} `;
+                counter.textContent = `Active: ${formatNumber (randomCount)} `;
                 const greenDot = document.createElement('span');
                 greenDot.className = 'green-dot';
                 counter.appendChild(greenDot);
