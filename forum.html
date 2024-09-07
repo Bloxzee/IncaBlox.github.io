@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum - IncaBlox</title>
     <link rel="icon" href="logo.png" type="image/x-icon">
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* General Styles */
@@ -14,8 +13,8 @@
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212; /* Dark background */
-            color: #e0e0e0; /* Light text color */
+            background-color: #121212;
+            color: #e0e0e0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -28,7 +27,7 @@
 
         a {
             text-decoration: none;
-            color: #ff6600; /* Accent color for links */
+            color: #ff6600;
         }
 
         ul {
@@ -36,13 +35,12 @@
             padding: 0;
         }
 
-        /* Header Styles */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
-            background-color: #232323; /* Darker navbar */
+            background-color: #232323;
         }
 
         .logo img {
@@ -55,7 +53,7 @@
         }
 
         .nav-links a {
-            color: #e0e0e0; /* Light text color */
+            color: #e0e0e0;
             font-weight: bold;
         }
 
@@ -84,48 +82,68 @@
         }
 
         .auth-buttons .logout-btn {
-            background-color: #d32f2f; /* Red background */
+            background-color: #d32f2f;
             color: #fff;
         }
 
-        /* Forum Page Styles */
         .forum-content {
             padding: 50px 20px;
             flex-grow: 1;
+        }
+
+        .forum-posts {
             max-width: 800px;
             margin: 0 auto;
-        }
-
-        .forum-content h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .forum-topic {
             background-color: #1e1e1e;
-            border: 1px solid #333;
             padding: 20px;
-            margin-bottom: 15px;
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
-        .forum-topic h2 {
-            font-size: 1.5em;
-            color: #ff6600; /* Accent color for topic titles */
+        .forum-posts h2 {
+            margin-bottom: 20px;
+        }
+
+        .forum-post {
+            background-color: #2a2a2a;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #444;
+        }
+
+        .forum-post p {
             margin-bottom: 10px;
         }
 
-        .forum-topic p {
-            font-size: 1.1em;
+        .forum-post .replies {
+            font-size: 0.9em;
             color: #ccc;
-            margin-bottom: 5px;
         }
 
-        .forum-topic a {
-            color: #ff6600; /* Accent color for links */
+        .new-post-form {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
         }
 
-        /* Footer Styles */
+        .new-post-form textarea {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #121212;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            resize: none;
+        }
+
+        .new-post-form button {
+            padding: 10px;
+            background-color: #ff6600;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
         .footer {
             background-color: #232323;
             color: #e0e0e0;
@@ -143,7 +161,6 @@
 </head>
 
 <body>
-    <!-- Header -->
     <header class="navbar">
         <div class="logo">
             <img src="logo.png" alt="IncaBlox Logo">
@@ -162,30 +179,21 @@
         </div>
     </header>
 
-    <!-- Forum Page Content -->
     <main class="forum-content">
-        <h1>Community Forum</h1>
-
-        <div class="forum-topic">
-            <h2>Welcome to the IncaBlox Forum!</h2>
-            <p>This is the place to discuss all things IncaBlox. Feel free to ask questions, share tips, and connect with other players.</p>
+        <div class="new-post-form">
+            <textarea id="newPostContent" rows="4" placeholder="What's on your mind?"></textarea>
+            <button onclick="addPost()">Add Post</button>
         </div>
-
-        <div class="forum-topic">
-            <h2><a href="#">Topic Title Example</a></h2>
-            <p>Started by <strong>Username</strong> | 5 replies | Last post: 2 hours ago</p>
+        <div class="forum-posts" id="forumPosts">
+            <h2>Forum Posts</h2>
+            <!-- Posts will be inserted here by JavaScript -->
         </div>
-
-        <!-- Add more forum topics as needed -->
-
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript for Forum Page -->
     <script>
         // Function to get a cookie by name
         function getCookie(name) {
@@ -237,8 +245,40 @@
             return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // Initialize the page with authentication buttons and check login status
+        // Initialize the page with authentication buttons
         document.addEventListener('DOMContentLoaded', handleAuthButtons);
+
+        // Function to add a new post
+        function addPost() {
+            const content = document.getElementById('newPostContent').value.trim();
+            if (content) {
+                const postContainer = document.getElementById('forumPosts');
+                const postElement = document.createElement('div');
+                postElement.className = 'forum-post';
+
+                const replyCount = Math.floor(Math.random() * 100) + 1;
+                postElement.innerHTML = `
+                    <p>${content}</p>
+                    <div class="replies">Replies: <span class="reply-count">${formatNumber(replyCount)}</span></div>
+                `;
+
+                postContainer.appendChild(postElement);
+                document.getElementById('newPostContent').value = ''; // Clear the textarea
+
+                // Start the reply counter increment for this post
+                increaseReplies(postElement.querySelector('.reply-count'));
+            }
+        }
+
+        // Function to increase replies count
+        function increaseReplies(replyElement) {
+            setInterval(() => {
+                let currentCount = parseInt(replyElement.textContent.replace(/,/g, ''));
+                const increaseBy = Math.floor(Math.random() * 3) + 2; // Random between 2 and 4
+                currentCount += increaseBy;
+                replyElement.textContent = formatNumber(currentCount);
+            }, 1000);
+        }
     </script>
 </body>
 
