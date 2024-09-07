@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum - IncaBlox</title>
+    <link rel="icon" href="logo.png" type="image/x-icon">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1, h2, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #ff6600; /* Accent color for links */
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Header Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #232323; /* Darker navbar */
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav-links ul {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #e0e0e0; /* Light text color */
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .auth-buttons .login-btn,
+        .auth-buttons .signup-btn,
+        .auth-buttons .logout-btn {
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .auth-buttons .login-btn {
+            background-color: #444;
+            color: #e0e0e0;
+        }
+
+        .auth-buttons .signup-btn {
+            background-color: #ff6600;
+            color: #fff;
+        }
+
+        .auth-buttons .logout-btn {
+            background-color: #d32f2f; /* Red background */
+            color: #fff;
+        }
+
+        /* Forum Page Styles */
+        .forum-content {
+            padding: 50px 20px;
+            flex-grow: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .forum-content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .forum-topic {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .forum-topic h2 {
+            font-size: 1.5em;
+            color: #ff6600; /* Accent color for topic titles */
+            margin-bottom: 10px;
+        }
+
+        .forum-topic p {
+            font-size: 1.1em;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        .forum-topic a {
+            color: #ff6600; /* Accent color for links */
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #232323;
+            color: #e0e0e0;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .footer p {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="IncaBlox Logo">
+        </div>
+        <nav class="nav-links">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="games">Games</a></li>
+                <li><a href="search">Search</a></li>
+                <li><a href="profile">Profile</a></li>
+                <li><a href="bux">Bux</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons" id="auth-buttons">
+            <!-- Buttons will be inserted here by JavaScript -->
+        </div>
+    </header>
+
+    <!-- Forum Page Content -->
+    <main class="forum-content">
+        <h1>Community Forum</h1>
+
+        <div class="forum-topic">
+            <h2>Welcome to the IncaBlox Forum!</h2>
+            <p>This is the place to discuss all things IncaBlox. Feel free to ask questions, share tips, and connect with other players.</p>
+        </div>
+
+        <div class="forum-topic">
+            <h2><a href="#">Topic Title Example</a></h2>
+            <p>Started by <strong>Username</strong> | 5 replies | Last post: 2 hours ago</p>
+        </div>
+
+        <!-- Add more forum topics as needed -->
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 IncaBlox. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Forum Page -->
+    <script>
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            let expires = `expires=${d.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
+
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        // Function to handle authentication buttons
+        function handleAuthButtons() {
+            const username = getCookie('username');
+            const bux = getCookie('bux');
+            const authButtonsDiv = document.getElementById('auth-buttons');
+
+            if (username) {
+                // User is logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+                `;
+            } else {
+                // Redirect to login if no username cookie found
+                window.location.href = '/login';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            deleteCookie('username');
+            deleteCookie('bux');
+            handleAuthButtons(); // Update buttons after logout
+        }
+
+        // Function to format numbers with commas
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Initialize the page with authentication buttons and check login status
+        document.addEventListener('DOMContentLoaded', handleAuthButtons);
+    </script>
+</body>
+
+</html>
