@@ -100,17 +100,19 @@
         }
 
         .forum-posts {
-            margin: 0 auto;
-            max-width: 800px;
-            width: 100%;
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
         }
 
         .forum-posts .post {
             background-color: #1e1e1e;
             border: 1px solid #333;
             padding: 15px;
-            margin-bottom: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
         }
 
         .forum-posts .post h2 {
@@ -121,99 +123,69 @@
         .forum-posts .post p {
             font-size: 1em;
             color: #ccc;
-            margin-bottom: 15px;
         }
 
-        .forum-posts .post .reply-counter {
-            font-size: 0.9em;
-            color: #ff6600;
-        }
-
-        .add-post-btn {
-            background-color: #ff6600;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: inline-block;
-            text-align: left;
-        }
-
-        .add-post-btn:hover {
-            background-color: #e55d00; /* Slightly darker on hover */
+        .reply-counter {
+            margin-top: 10px;
+            font-size: 1em;
+            color: #e0e0e0;
         }
 
         /* Popup Styles */
         .popup-overlay {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1000; /* Make sure it appears on top */
+            z-index: 1000;
         }
 
         .popup {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #1e1e1e;
-            border: 1px solid #333;
             padding: 20px;
-            max-width: 500px;
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
             width: 90%;
-            z-index: 1001; /* Make sure it appears on top of overlay */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
         }
 
         .popup h2 {
-            font-size: 1.8em;
+            font-size: 1.5em;
             margin-bottom: 15px;
         }
 
-        .popup input[type="text"],
         .popup textarea {
-            width: calc(100% - 22px);
+            width: 100%;
             padding: 10px;
-            border: 1px solid #333;
-            background-color: #1e1e1e;
-            color: #e0e0e0;
-            font-size: 1em;
             margin-bottom: 15px;
-        }
-
-        .popup textarea {
-            height: 150px;
-            resize: none;
+            border: 1px solid #333;
+            background-color: #121212;
+            color: #e0e0e0;
+            resize: vertical;
         }
 
         .popup button {
-            padding: 10px 15px;
+            width: 100%;
+            padding: 10px;
             border: none;
-            background-color: #ff6600; /* Accent color */
-            color: #fff;
-            font-weight: bold;
             cursor: pointer;
-            border-radius: 5px;
+            font-size: 1em;
+            font-weight: bold;
+            color: #fff;
+            background-color: #ff6600;
         }
 
-        .popup button:hover {
-            background-color: #e55d00; /* Slightly darker on hover */
-        }
-
-        .popup button.close-btn {
-            background-color: #d32f2f; /* Red for close button */
-        }
-
-        .popup button.close-btn:hover {
-            background-color: #c62828; /* Slightly darker on hover */
+        .popup button.cancel {
+            background-color: #444;
         }
 
         /* Footer Styles */
@@ -222,7 +194,7 @@
             color: #e0e0e0;
             padding: 20px 0;
             text-align: center;
-            position: relative;
+            position: absolute;
             width: 100%;
             bottom: 0;
         }
@@ -246,6 +218,7 @@
                 <li><a href="search">Search</a></li>
                 <li><a href="profile">Profile</a></li>
                 <li><a href="bux">Bux</a></li>
+                <li><a href="forum">Forum</a></li>
             </ul>
         </nav>
         <div class="auth-buttons" id="auth-buttons">
@@ -262,20 +235,22 @@
         </div>
     </main>
 
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+
+    <!-- Popup -->
+    <div class="popup" id="popup">
+        <h2>Create New Post</h2>
+        <input type="text" id="postTitle" placeholder="Post Title" />
+        <textarea id="postContent" rows="5" placeholder="Write your post here..."></textarea>
+        <button onclick="submitPost()">Submit Post</button>
+        <button class="cancel" onclick="closePopup()">Cancel</button>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
-
-    <!-- Popup HTML -->
-    <div id="popup" class="popup">
-        <h2>Create a New Post</h2>
-        <input type="text" id="postTitle" placeholder="Post Title">
-        <textarea id="postContent" placeholder="Post Content"></textarea>
-        <button onclick="submitPost()">Add Post</button>
-        <button class="close-btn" onclick="closePopup()">Close</button>
-    </div>
-    <div id="popupOverlay" class="popup-overlay"></div>
 
     <!-- JavaScript for Forum Handling -->
     <script>
@@ -329,7 +304,28 @@ function logout() {
 
 // Function to format numbers with commas
 function formatNumber(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// Function to handle post submission
+function submitPost() {
+    const title = document.getElementById('postTitle').value;
+    const content = document.getElementById('postContent').value;
+
+    if (title && content) {
+        const postContainer = document.getElementById('forumPosts');
+        const postElement = document.createElement('div');
+        postElement.className = 'post';
+        postElement.innerHTML = `
+            <h2>${title}</h2>
+            <p>${content}</p>
+            <div class="reply-counter">Replies: <span class="reply-count">0</span></div>
+        `;
+        postContainer.appendChild(postElement);
+        closePopup(); // Close the popup after submission
+    } else {
+        alert('Please fill out both fields.');
+    }
 }
 
 // Function to open the popup
@@ -344,44 +340,26 @@ function closePopup() {
     document.getElementById('popupOverlay').style.display = 'none';
 }
 
-// Function to submit a new post
-function submitPost() {
-    const title = document.getElementById('postTitle').value;
-    const content = document.getElementById('postContent').value;
-
-    if (title && content) {
-        const post = document.createElement('div');
-        post.className = 'post';
-        post.innerHTML = `
-            <h2>${title}</h2>
-            <p>${content}</p>
-            <div class="reply-counter">Replies: 0</div>
-        `;
-        document.getElementById('forumPosts').appendChild(post);
-        closePopup();
-    } else {
-        alert('Please fill out both fields.');
-    }
-}
-
-// Function to increase replies randomly every second
-function increaseReplies() {
-    const posts = document.querySelectorAll('.forum-posts .post');
-    posts.forEach(post => {
-        const replyCounter = post.querySelector('.reply-counter');
-        let replies = parseInt(replyCounter.innerText.replace('Replies: ', '').replace(',', ''));
-        if (isNaN(replies)) replies = 0;
-        const randomIncrease = Math.floor(Math.random() * 3) + 2; // Random number between 2 and 4
-        replies += randomIncrease;
-        replyCounter.innerText = `Replies: ${formatNumber(replies)}`;
+// Function to update reply counts
+function updateReplyCounts() {
+    const counters = document.querySelectorAll('.reply-counter');
+    counters.forEach(counter => {
+        const replyCountElement = counter.querySelector('.reply-count');
+        let count = parseInt(replyCountElement.innerText.replace(/,/g, '')) || 0;
+        const increment = Math.floor(Math.random() * 3) + 2; // Random increment between 2 and 4
+        count += increment;
+        replyCountElement.innerText = formatNumber(count);
     });
 }
 
-// Initialize the page with authentication buttons
-document.addEventListener('DOMContentLoaded', () => {
+// Function to initialize page
+function init() {
     handleAuthButtons();
-    setInterval(increaseReplies, 1000); // Increase replies every second
-});
+    setInterval(updateReplyCounts, 1000); // Update reply counts every second
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', init);
 
     </script>
 </html>
