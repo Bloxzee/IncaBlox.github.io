@@ -121,6 +121,16 @@
             margin-bottom: 10px;
         }
 
+        .trade-box p.offering {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .trade-box p.requesting {
+            color: #ff0000;
+            font-weight: bold;
+        }
+
         .trade-buttons {
             display: flex;
             justify-content: space-between;
@@ -194,95 +204,103 @@
 
     <!-- JavaScript for Trades Handling -->
     <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-        // Function to set a cookie
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            let expires = `expires=${d.toUTCString()}`;
-            document.cookie = `${name}=${value}; ${expires}; path=/`;
-        }
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+}
 
-        // Function to delete a cookie
-        function deleteCookie(name) {
-            setCookie(name, '', -1);
-        }
+// Function to delete a cookie
+function deleteCookie(name) {
+    setCookie(name, '', -1);
+}
 
-        // Function to handle authentication buttons
-        function handleAuthButtons() {
-            const username = getCookie('username');
-            const bux = getCookie('bux');
-            const authButtonsDiv = document.getElementById('auth-buttons');
+// Function to handle authentication buttons
+function handleAuthButtons() {
+    const username = getCookie('username');
+    const bux = getCookie('bux');
+    const authButtonsDiv = document.getElementById('auth-buttons');
 
-            if (username) {
-                // User is logged in
-                authButtonsDiv.innerHTML = `
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
-                `;
-                generateTrade();
-            } else {
-                // User is not logged in
-                window.location.href = '/login';
-            }
-        }
+    if (username) {
+        // User is logged in
+        authButtonsDiv.innerHTML = `
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+        `;
+        generateTrade();
+    } else {
+        // User is not logged in
+        window.location.href = '/login';
+    }
+}
 
-        // Logout function
-        function logout() {
-            deleteCookie('username');
-            deleteCookie('bux');
-            handleAuthButtons(); // Update buttons after logout
-        }
+// Logout function
+function logout() {
+    deleteCookie('username');
+    deleteCookie('bux');
+    handleAuthButtons(); // Update buttons after logout
+}
 
-        // Function to format numbers with commas
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+// Function to format numbers with commas
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
-        // Function to generate a trade
-        function generateTrade() {
-            const tradeBox = document.getElementById('tradeBox');
-            const username = generateRandomUsername();
-            const offering = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
-            const requesting = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
+// Function to generate a trade
+function generateTrade() {
+    const tradeBox = document.getElementById('tradeBox');
+    const username = generateRandomUsername();
+    const offering = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
+    const requesting = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
 
-            tradeBox.innerHTML = `
-                <h2>${username}</h2>
-                <p>Offering: ฿${formatNumber(offering)}</p>
-                <p>Requesting: ฿${formatNumber(requesting)}</p>
-                <div class="trade-buttons">
-                    <button onclick="acceptTrade(${offering - requesting})">Accept</button>
-                    <button class="decline" onclick="generateTrade()">Decline</button>
-                </div>
-            `;
-        }
+    let offeringText = `Offering: ฿${formatNumber(offering)}`;
+    let requestingText = `Requesting: ฿${formatNumber(requesting)}`;
 
-        // Function to generate a random username
-        function generateRandomUsername() {
-            const prefixes = ['Cool', 'Sweet', 'Epic', 'Fast'];
-            const suffixes = ['Monkey', 'Darren', 'Gamer', 'Player'];
-            const number = Math.floor(Math.random() * 100) + 1;
-            return `${prefixes[Math.floor(Math.random() * prefixes.length)]}${suffixes[Math.floor(Math.random() * suffixes.length)]}${number}`;
-        }
+    if (offering > requesting) {
+        offeringText = `<span class="offering">${offeringText}</span>`;
+        requestingText = `<span class="requesting">${requestingText}</span>`;
+    } else {
+        offeringText = `<span class="requesting">${offeringText}</span>`;
+        requestingText = `<span class="offering">${requestingText}</span>`;
+    }
 
-        // Function to handle trade acceptance
-        function acceptTrade(amount) {
-            const currentBux = parseInt(getCookie('bux')) || 0;
-            const newBux = currentBux + amount;
-            setCookie('bux', newBux, 4); // Update Bux cookie for 4 days
+    tradeBox.innerHTML = `
+        <h2>${username}</h2>
+        <p>${offeringText}</p>
+        <p>${requestingText}</p>
+        <div class="trade-buttons">
+            <button onclick="acceptTrade(${offering - requesting})">Accept</button>
+            <button class="decline" onclick="generateTrade()">Decline</button>
+        </div>
+    `;
+}
 
-            alert(`You received ฿${formatNumber(amount)}!`);
-            generateTrade(); // Generate a new trade
-        }
+// Function to generate a random username
+function generateRandomUsername() {
+    const prefixes = ['Cool', 'Sweet', 'Epic', 'Fast'];
+    const suffixes = ['Monkey', 'Darren', 'Gamer', 'Player'];
+    const number = Math.floor(Math.random() * 100) + 1;
+    return `${prefixes[Math.floor(Math.random() * prefixes.length)]}${suffixes[Math.floor(Math.random() * suffixes.length)]}${number}`;
+}
 
-        // Initialize the page with authentication and trades
-        document.addEventListener('DOMContentLoaded', handleAuthButtons);
+// Function to handle trade acceptance
+function acceptTrade(amount) {
+    const currentBux = parseInt(getCookie('bux')) || 0;
+    const newBux = currentBux + amount;
+    setCookie('bux', newBux, 4); // Update Bux cookie for 4 days
+
+    generateTrade(); // Generate a new trade
+}
+
+// Initialize the page with authentication and trades
+document.addEventListener('DOMContentLoaded', handleAuthButtons);
     </script>
-</body>
-
 </html>
