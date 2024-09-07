@@ -171,24 +171,54 @@ ul {
 .popup h2 {
     margin-top: 0;
     margin-bottom: 20px; /* Add space below the title */
+    font-size: 1.5em; /* Adjust font size if needed */
 }
 
 .popup label {
     display: block;
     margin-bottom: 10px; /* Add space below labels */
+    font-weight: bold; /* Make labels bold */
 }
 
 .popup input,
 .popup textarea {
     width: calc(100% - 20px); /* Adjust width for padding */
     padding: 10px;
+    border: 1px solid #333;
+    background-color: #292929;
+    color: #e0e0e0;
     border-radius: 0; /* Remove rounding */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    margin-bottom: 10px; /* Space below each input/textarea */
+}
+
+.popup input:focus,
+.popup textarea:focus {
+    outline: none;
+    border-color: #ff6600; /* Focus border color */
 }
 
 .popup button {
     margin-top: 10px;
     padding: 10px 20px;
+    border: none;
+    background-color: #ff6600;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
     border-radius: 0; /* Remove rounding */
+}
+
+.popup button:hover {
+    background-color: #e65c00; /* Slightly darker on hover */
+}
+
+.popup button.cancel-btn {
+    background-color: #444;
+}
+
+.popup button.cancel-btn:hover {
+    background-color: #333; /* Slightly darker on hover */
 }
 
 .overlay {
