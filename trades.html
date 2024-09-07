@@ -307,7 +307,16 @@ function acceptTrade(profit) {
     const bux = getCookie('bux') ? parseInt(getCookie('bux')) : 0;
     const newBux = bux + profit;
     setCookie('bux', newBux, 4); // Set cookie for 4 days
+    updateBuxDisplay(newBux); // Update Bux display in navbar
     generateTrade(); // Generate a new trade
+}
+
+// Function to update the Bux display in the navbar
+function updateBuxDisplay(bux) {
+    const buxDiv = document.querySelector('.auth-buttons div');
+    if (buxDiv) {
+        buxDiv.innerHTML = `Bux: ฿${formatNumber(bux)}`;
+    }
 }
 
 // Initialize the page
