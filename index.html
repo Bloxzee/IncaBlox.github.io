@@ -284,7 +284,7 @@
 
         // Function to update counters
         function updateCounters() {
-            const startUnix = 1725707839; // Given Unix timestamp
+            const startUnix = 1725708900; // Given Unix timestamp
             const nowUnix = Math.floor(Date.now() / 1000); // Current Unix timestamp
 
             // Calculate differences
@@ -295,7 +295,7 @@
             // Update counters with formatted numbers
             document.getElementById('total-accounts').textContent = formatNumber(totalAccounts);
             document.getElementById('games-played').textContent = formatNumber(gamesPlayed);
-            document.getElementById('bux-spent').textContent = formatNumber(buxSpent);
+            document.getElementById('bux-spent').textContent = `฿${formatNumber(buxSpent)}`;
         }
 
         // Call the function to handle authentication buttons and update counters on page load
