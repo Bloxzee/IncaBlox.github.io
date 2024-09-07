@@ -103,7 +103,7 @@
 
         .forum-actions {
             display: flex;
-            justify-content: flex-start; /* Align button to the left */
+            justify-content: flex-start;
             margin-bottom: 20px;
         }
 
@@ -131,6 +131,7 @@
             padding: 15px;
             border-radius: 5px;
             border: 1px solid #333;
+            position: relative;
         }
 
         .forum-post h2 {
@@ -141,6 +142,49 @@
         .forum-post p {
             font-size: 1em;
             color: #ccc;
+        }
+
+        .reply-counter {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background-color: #444;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .popup h2 {
+            margin-top: 0;
+        }
+
+        .popup button {
+            margin-top: 10px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
         }
 
         /* Footer Styles */
@@ -184,7 +228,7 @@
     <main class="forum-content">
         <h1>Forum</h1>
         <div class="forum-actions">
-            <button onclick="addPost()">Add Post</button>
+            <button onclick="openPopup()">Add Post</button>
         </div>
         <div class="forum-posts" id="forumPosts">
             <!-- Forum posts will be displayed here -->
@@ -196,90 +240,110 @@
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
+    <!-- Popup for Adding Post -->
+    <div class="overlay" id="popupOverlay"></div>
+    <div class="popup" id="popup">
+        <h2>Add New Post</h2>
+        <label for="postTitle">Title:</label>
+        <input type="text" id="postTitle" placeholder="Enter title" /><br /><br />
+        <label for="postContent">Content:</label><br />
+        <textarea id="postContent" placeholder="Enter content" rows="4" cols="40"></textarea><br /><br />
+        <button onclick="submitPost()">Submit</button>
+        <button onclick="closePopup()">Cancel</button>
+    </div>
+
     <!-- JavaScript for Forum Handling -->
     <script>
-        // Function to get a cookie by name
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
+// Function to get a cookie by name
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-        // Function to set a cookie
-        function setCookie(name, value, days) {
-            const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-            let expires = `expires=${d.toUTCString()}`;
-            document.cookie = `${name}=${value}; ${expires}; path=/`;
-        }
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+}
 
-        // Function to delete a cookie
-        function deleteCookie(name) {
-            setCookie(name, '', -1);
-        }
+// Function to delete a cookie
+function deleteCookie(name) {
+    setCookie(name, '', -1);
+}
 
-        // Function to handle authentication buttons
-        function handleAuthButtons() {
-            const username = getCookie('username');
-            const bux = getCookie('bux');
-            const authButtonsDiv = document.getElementById('auth-buttons');
+// Function to handle authentication buttons
+function handleAuthButtons() {
+    const username = getCookie('username');
+    const bux = getCookie('bux');
+    const authButtonsDiv = document.getElementById('auth-buttons');
 
-            if (username) {
-                // User is logged in
-                authButtonsDiv.innerHTML = `
-                    <button class="logout-btn" onclick="logout()">Logout</button>
-                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
-                `;
-            } else {
-                // User is not logged in
-                authButtonsDiv.innerHTML = `
-                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
-                `;
-            }
-        }
+    if (username) {
+        // User is logged in
+        authButtonsDiv.innerHTML = `
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+        `;
+    } else {
+        // Redirect to login if no username cookie found
+        window.location.href = '/login';
+    }
+}
 
-        // Logout function
-        function logout() {
-            deleteCookie('username');
-            deleteCookie('bux');
-            handleAuthButtons(); // Update buttons after logout
-        }
+// Logout function
+function logout() {
+    deleteCookie('username');
+    deleteCookie('bux');
+    handleAuthButtons(); // Update buttons after logout
+}
 
-        // Function to format numbers with commas
-        function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+// Function to format numbers with commas
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
-        // Function to add a new post to the forum
-        function addPost() {
-            const forumPosts = document.getElementById('forumPosts');
-            const post = document.createElement('div');
-            post.className = 'forum-post';
-            post.innerHTML = `
-                <h2>New Post Title</h2>
-                <p>New post content goes here...</p>
-            `;
-            forumPosts.appendChild(post);
-        }
+// Initialize the page with authentication buttons
+document.addEventListener('DOMContentLoaded', handleAuthButtons);
 
-        // Simulate replies increasing randomly
-        function simulateReplies() {
-            const replyCounters = document.getElementsByClassName('reply-counter');
-            Array.from(replyCounters).forEach(counter => {
-                let currentReplies = parseInt(counter.innerText.replace(/,/g, ''));
-                const increment = Math.floor(Math.random() * 3) + 2; // Randomly add 2-4 replies
-                currentReplies += increment;
-                counter.innerText = formatNumber(currentReplies);
-            });
-        }
+// Function to open the popup
+function openPopup() {
+    document.getElementById('popupOverlay').style.display = 'flex';
+}
 
-        // Initialize the page with authentication buttons
-        document.addEventListener('DOMContentLoaded', () => {
-            handleAuthButtons();
-            setInterval(simulateReplies, 1000); // Increase replies every second
-        });
+// Function to close the popup
+function closePopup() {
+    document.getElementById('popupOverlay').style.display = 'none';
+    document.getElementById('newPostContent').value = ''; // Clear the textarea
+}
+
+// Function to add a new post
+function addPost() {
+    const content = document.getElementById('newPostContent').value;
+    if (content.trim() === '') {
+        alert('Post content cannot be empty.');
+        return;
+    }
+
+    const postContainer = document.createElement('div');
+    postContainer.className = 'forum-post';
+    postContainer.innerHTML = `
+        <p>${content}</p>
+        <p class="replies">Replies: <span class="reply-count">0</span></p>
+    `;
+
+    document.getElementById('forumPosts').appendChild(postContainer);
+    closePopup();
+
+    // Start incrementing replies
+    const replyCountElement = postContainer.querySelector('.reply-count');
+    setInterval(() => {
+        const currentCount = parseInt(replyCountElement.textContent.replace(/,/g, ''), 10);
+        const increment = Math.floor(Math.random() * 3) + 2; // Random between 2 and 4
+        replyCountElement.textContent = formatNumber(currentCount + increment);
+    }, 1000);
+}
+
     </script>
-</body>
-
 </html>
