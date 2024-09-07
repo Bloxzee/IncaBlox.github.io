@@ -301,6 +301,7 @@ ul {
 
     <!-- JavaScript for Forum Handling -->
     <script>
+// Function to get a cookie value
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -345,6 +346,7 @@ function handleAuthButtons() {
 function logout() {
     deleteCookie('username');
     deleteCookie('bux');
+    deleteCookie('postCount'); // Clear post count cookie on logout
     handleAuthButtons(); // Update buttons after logout
 }
 
@@ -371,23 +373,32 @@ function submitPost() {
     const content = document.getElementById('postContent').value;
 
     if (title && content) {
-        const forumPostsDiv = document.getElementById('forumPosts');
-        
-        const postDiv = document.createElement('div');
-        postDiv.className = 'forum-post';
-        postDiv.innerHTML = `
-            <h2>${title}</h2>
-            <p>${content}</p>
-            <div class="reply-counter">Replies: 0</div>
-        `;
-        forumPostsDiv.appendChild(postDiv);
+        const postCount = parseInt(getCookie('postCount') || '0', 10);
 
-        // Reset popup fields
-        document.getElementById('postTitle').value = '';
-        document.getElementById('postContent').value = '';
+        if (postCount < 3) {
+            const forumPostsDiv = document.getElementById('forumPosts');
+            
+            const postDiv = document.createElement('div');
+            postDiv.className = 'forum-post';
+            postDiv.innerHTML = `
+                <h2>${title}</h2>
+                <p>${content}</p>
+                <div class="reply-counter">Replies: 0</div>
+            `;
+            forumPostsDiv.appendChild(postDiv);
 
-        closePopup(); // Close the popup
-        startReplyCounter(postDiv.querySelector('.reply-counter')); // Start the reply counter
+            // Update post count in cookie
+            setCookie('postCount', postCount + 1, 7); // Expires in 7 days
+
+            // Reset popup fields
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+
+            closePopup(); // Close the popup
+            startReplyCounter(postDiv.querySelector('.reply-counter')); // Start the reply counter
+        } else {
+            alert('You have reached the maximum number of posts (3).');
+        }
     } else {
         alert('Please fill in both title and content.');
     }
@@ -403,7 +414,20 @@ function startReplyCounter(counterElement) {
     }, 1000);
 }
 
-// Initialize the page with authentication buttons
-document.addEventListener('DOMContentLoaded', handleAuthButtons);
+// Function to check if the user is logged in
+function checkLogin() {
+    const username = getCookie('username');
+    if (!username) {
+        // Redirect to login page if not logged in
+        window.location.href = '/login';
+    }
+}
+
+// Initialize the page with authentication buttons and check login
+document.addEventListener('DOMContentLoaded', () => {
+    handleAuthButtons();
+    checkLogin();
+});
+
     </script>
 </html>
