@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum - IncaBlox</title>
     <link rel="icon" href="logo.png" type="image/x-icon">
+    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* General Styles */
@@ -13,8 +14,8 @@
             font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: #e0e0e0;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -27,7 +28,7 @@
 
         a {
             text-decoration: none;
-            color: #ff6600;
+            color: #ff6600; /* Accent color for links */
         }
 
         ul {
@@ -35,12 +36,13 @@
             padding: 0;
         }
 
+        /* Header Styles */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
-            background-color: #232323;
+            background-color: #232323; /* Darker navbar */
         }
 
         .logo img {
@@ -53,7 +55,7 @@
         }
 
         .nav-links a {
-            color: #e0e0e0;
+            color: #e0e0e0; /* Light text color */
             font-weight: bold;
         }
 
@@ -82,120 +84,111 @@
         }
 
         .auth-buttons .logout-btn {
-            background-color: #d32f2f;
+            background-color: #d32f2f; /* Red background */
             color: #fff;
         }
 
+        /* Forum Page Styles */
         .forum-content {
             padding: 50px 20px;
-            flex-grow: 1;
+            text-align: left;
+        }
+
+        .forum-content h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .forum-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
         }
 
         .forum-posts {
-            max-width: 800px;
-            margin: 0 auto;
+            flex: 1;
             background-color: #1e1e1e;
-            padding: 20px;
             border: 1px solid #333;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .forum-posts h2 {
-            margin-bottom: 20px;
+            padding: 15px;
+            max-width: 600px;
         }
 
         .forum-post {
-            background-color: #2a2a2a;
             margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #444;
         }
 
         .forum-post p {
-            margin-bottom: 10px;
-        }
-
-        .forum-post .replies {
-            font-size: 0.9em;
+            font-size: 1em;
             color: #ccc;
         }
 
+        .forum-post .replies {
+            margin-top: 10px;
+            color: #ccc;
+        }
+
+        /* Button Styles */
         .add-post-btn {
-            display: block;
-            margin: 0 auto 20px auto;
-            padding: 10px 20px;
             background-color: #ff6600;
             color: #fff;
             border: none;
+            padding: 10px 20px;
             cursor: pointer;
+            font-size: 1em;
             font-weight: bold;
-            text-align: center;
         }
 
         /* Popup Styles */
         .popup-overlay {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            display: none;
             justify-content: center;
             align-items: center;
         }
 
-        .popup-content {
-            background-color: #1e1e1e;
+        .popup {
+            background-color: #232323;
             padding: 20px;
-            border: 1px solid #333;
-            width: 80%;
-            max-width: 400px;
+            border-radius: 5px;
+            width: 300px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
         }
 
-        .popup-content textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #121212;
+        .popup h2 {
+            margin-bottom: 15px;
             color: #e0e0e0;
+        }
+
+        .popup textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            background-color: #1e1e1e;
             border: 1px solid #333;
+            color: #e0e0e0;
             resize: none;
         }
 
-        .popup-content button {
-            padding: 10px;
+        .popup button {
+            margin-top: 10px;
             background-color: #ff6600;
             color: #fff;
             border: none;
+            padding: 10px;
             cursor: pointer;
             font-weight: bold;
-        }
-
-        .popup-content .close-btn {
-            background-color: #444;
-            margin-top: 10px;
-        }
-
-        .footer {
-            background-color: #232323;
-            color: #e0e0e0;
-            padding: 20px 0;
-            text-align: center;
-            position: relative;
-            width: 100%;
-            bottom: 0;
-        }
-
-        .footer p {
-            font-size: 0.9em;
         }
     </style>
 </head>
 
 <body>
+    <!-- Header -->
     <header class="navbar">
         <div class="logo">
             <img src="logo.png" alt="IncaBlox Logo">
@@ -214,27 +207,33 @@
         </div>
     </header>
 
+    <!-- Forum Page Content -->
     <main class="forum-content">
-        <button class="add-post-btn" onclick="openPopup()">Add Post</button>
-        <div class="forum-posts" id="forumPosts">
-            <h2>Forum Posts</h2>
-            <!-- Posts will be inserted here by JavaScript -->
+        <h1>Forum</h1>
+        <div class="forum-container">
+            <button class="add-post-btn" onclick="openPopup()">Add Post</button>
+            <div class="forum-posts" id="forumPosts">
+                <!-- Forum posts will be inserted here -->
+            </div>
         </div>
     </main>
 
-    <!-- Popup for Adding a Post -->
+    <!-- Popup -->
     <div class="popup-overlay" id="popupOverlay">
-        <div class="popup-content">
-            <textarea id="newPostContent" rows="4" placeholder="What's on your mind?"></textarea>
-            <button onclick="addPost()">Submit Post</button>
-            <button class="close-btn" onclick="closePopup()">Cancel</button>
+        <div class="popup">
+            <h2>New Post</h2>
+            <textarea id="newPostContent" placeholder="Write your post..."></textarea>
+            <button onclick="addPost()">Submit</button>
+            <button onclick="closePopup()">Cancel</button>
         </div>
     </div>
 
+    <!-- Footer -->
     <footer class="footer">
         <p>&copy; 2024 IncaBlox. All rights reserved.</p>
     </footer>
 
+    <!-- JavaScript -->
     <script>
         // Function to get a cookie by name
 function getCookie(name) {
