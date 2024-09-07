@@ -115,6 +115,7 @@
             cursor: pointer;
             font-size: 1em;
             font-weight: bold;
+            border-radius: 5px;
         }
 
         .forum-posts {
@@ -172,8 +173,24 @@
             margin-top: 0;
         }
 
+        .popup label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .popup input, .popup textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #292929;
+            color: #e0e0e0;
+        }
+
         .popup button {
             margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .overlay {
@@ -185,6 +202,12 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
             z-index: 999;
+        }
+
+        .popup .success-message {
+            display: none;
+            color: #4caf50;
+            font-weight: bold;
         }
 
         /* Footer Styles */
@@ -247,115 +270,121 @@
         <label for="postTitle">Title:</label>
         <input type="text" id="postTitle" placeholder="Enter title" /><br /><br />
         <label for="postContent">Content:</label><br />
-        <textarea id="postContent" placeholder="Enter content" rows="4" cols="40"></textarea><br /><br />
+        <textarea id="postContent" placeholder="Enter content" rows="4"></textarea><br /><br />
         <button onclick="submitPost()">Submit</button>
         <button onclick="closePopup()">Cancel</button>
+        <div class="success-message" id="successMessage">Post added successfully!</div>
     </div>
 
     <!-- JavaScript for Forum Handling -->
     <script>
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
+let postCount = 0; // Counter to track the number of posts
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Function to handle authentication buttons
+function handleAuthButtons() {
+    const username = getCookie('username');
+    const bux = getCookie('bux');
+    const authButtonsDiv = document.getElementById('auth-buttons');
+
+    if (username) {
+        // User is logged in
+        authButtonsDiv.innerHTML = `
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+        `;
+    } else {
+        // User is not logged in
+        authButtonsDiv.innerHTML = `
+            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+        `;
+    }
+}
+
+// Logout function
+function logout() {
+    deleteCookie('username');
+    deleteCookie('bux');
+    handleAuthButtons(); // Update buttons after logout
+}
+
+// Function to format numbers with commas
+function formatNumber(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Function to open the popup
+function openPopup() {
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('popupOverlay').style.display = 'block';
+}
+
+// Function to close the popup
+function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('popupOverlay').style.display = 'none';
+}
+
+// Function to submit a new post
+function submitPost() {
+    if (postCount >= 3) {
+        alert('You can only add up to 3 posts.');
+        return;
     }
 
-    // Function to set a cookie
-    function setCookie(name, value, days) {
-        const d = new Date();
-        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-        let expires = `expires=${d.toUTCString()}`;
-        document.cookie = `${name}=${value}; ${expires}; path=/`;
+    const title = document.getElementById('postTitle').value;
+    const content = document.getElementById('postContent').value;
+
+    if (title && content) {
+        const forumPostsDiv = document.getElementById('forumPosts');
+        
+        const postDiv = document.createElement('div');
+        postDiv.className = 'forum-post';
+        postDiv.innerHTML = `
+            <h2>${title}</h2>
+            <p>${content}</p>
+            <div class="reply-counter">Replies: 0</div>
+        `;
+        forumPostsDiv.appendChild(postDiv);
+
+        // Reset popup fields
+        document.getElementById('postTitle').value = '';
+        document.getElementById('postContent').value = '';
+
+        // Increase post count
+        postCount++;
+
+        closePopup(); // Close the popup
+        startReplyCounter(postDiv.querySelector('.reply-counter')); // Start the reply counter
+
+        // Show success message
+        const successMessage = document.getElementById('successMessage');
+        successMessage.style.display = 'block';
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 2000); // Hide after 2 seconds
+    } else {
+        alert('Please fill in both title and content.');
     }
+}
 
-    // Function to delete a cookie
-    function deleteCookie(name) {
-        setCookie(name, '', -1);
-    }
+// Function to start the reply counter
+function startReplyCounter(counterElement) {
+    let count = 0;
+    setInterval(() => {
+        const increment = Math.floor(Math.random() * 3) + 2; // Random number between 2 and 4
+        count += increment;
+        counterElement.textContent = `Replies: ${formatNumber(count)}`;
+    }, 1000);
+}
 
-    // Function to handle authentication buttons
-    function handleAuthButtons() {
-        const username = getCookie('username');
-        const bux = getCookie('bux');
-        const authButtonsDiv = document.getElementById('auth-buttons');
-
-        if (username) {
-            // User is logged in
-            authButtonsDiv.innerHTML = `
-                <button class="logout-btn" onclick="logout()">Logout</button>
-                <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
-            `;
-        } else {
-            // User is not logged in
-            authButtonsDiv.innerHTML = `
-                <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-                <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
-            `;
-        }
-    }
-
-    // Logout function
-    function logout() {
-        deleteCookie('username');
-        deleteCookie('bux');
-        handleAuthButtons(); // Update buttons after logout
-    }
-
-    // Function to format numbers with commas
-    function formatNumber(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    // Function to open the popup
-    function openPopup() {
-        document.getElementById('popup').style.display = 'block';
-        document.getElementById('popupOverlay').style.display = 'block';
-    }
-
-    // Function to close the popup
-    function closePopup() {
-        document.getElementById('popup').style.display = 'none';
-        document.getElementById('popupOverlay').style.display = 'none';
-    }
-
-    // Function to submit a new post
-    function submitPost() {
-        const title = document.getElementById('postTitle').value;
-        const content = document.getElementById('postContent').value;
-
-        if (title && content) {
-            const forumPostsDiv = document.getElementById('forumPosts');
-            
-            const postDiv = document.createElement('div');
-            postDiv.className = 'forum-post';
-            postDiv.innerHTML = `
-                <h2>${title}</h2>
-                <p>${content}</p>
-                <div class="reply-counter">Replies: 0</div>
-            `;
-            forumPostsDiv.appendChild(postDiv);
-
-            // Reset popup fields
-            document.getElementById('postTitle').value = '';
-            document.getElementById('postContent').value = '';
-
-            closePopup(); // Close the popup
-            startReplyCounter(postDiv.querySelector('.reply-counter')); // Start the reply counter
-        } else {
-            alert('Please fill in both title and content.');
-        }
-    }
-
-    // Function to start the reply counter
-    function startReplyCounter(counterElement) {
-        let count = 0;
-        setInterval(() => {
-            const increment = Math.floor(Math.random() * 3) + 2; // Random number between 2 and 4
-            count += increment;
-            counterElement.textContent = `Replies: ${formatNumber(count)}`;
-        }, 1000);
-    }
-
-    // Initialize the page with authentication buttons
-    document.addEventListener('DOMContentLoaded', handleAuthButtons);
-</script>
+// Initialize the page with authentication buttons
+document.addEventListener('DOMContentLoaded', handleAuthButtons);
+    </script>
+</html>
