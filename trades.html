@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trades - IncaBlox</title>
     <link rel="icon" href="logo.png" type="image/x-icon">
+    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* General Styles */
@@ -88,13 +89,13 @@
         }
 
         /* Trades Page Styles */
-        .trades-content {
+        .trade-content {
             padding: 50px 20px;
             width: 80%;
             margin: 0 auto;
         }
 
-        .trades-content h1 {
+        .trade-content h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
             text-align: center;
@@ -103,12 +104,13 @@
         .trade-box {
             background-color: #1e1e1e;
             border: 1px solid #333;
-            padding: 20px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 0;
             margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             gap: 10px;
+            text-align: center;
         }
 
         .trade-box h2 {
@@ -117,38 +119,41 @@
         }
 
         .trade-box p {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .trade-box p.offering {
-            color: #00ff00;
-            font-weight: bold;
-        }
-
-        .trade-box p.requesting {
-            color: #ff0000;
-            font-weight: bold;
+            font-size: 1em;
         }
 
         .trade-buttons {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 10px;
         }
 
         .trade-buttons button {
             padding: 10px 20px;
-            background-color: #ff6600;
-            color: #fff;
             border: none;
             cursor: pointer;
             font-size: 1em;
             font-weight: bold;
-            border-radius: 0;
+        }
+
+        .trade-buttons button.accept {
+            background-color: #ff6600;
+            color: #fff;
         }
 
         .trade-buttons button.decline {
             background-color: #d32f2f;
+            color: #fff;
+        }
+
+        .profit-positive {
+            color: #00ff00; /* Green color for positive profit */
+            font-weight: bold;
+        }
+
+        .profit-negative {
+            color: #ff0000; /* Red color for negative profit */
+            font-weight: bold;
         }
 
         /* Footer Styles */
@@ -181,6 +186,7 @@
                 <li><a href="search">Search</a></li>
                 <li><a href="profile">Profile</a></li>
                 <li><a href="bux">Bux</a></li>
+                <li><a href="forum">Forum</a></li>
                 <li><a href="trades">Trades</a></li>
             </ul>
         </nav>
@@ -190,10 +196,10 @@
     </header>
 
     <!-- Trades Page Content -->
-    <main class="trades-content">
+    <main class="trade-content">
         <h1>Trades</h1>
         <div id="tradeBox" class="trade-box">
-            <!-- Trade details will be inserted here by JavaScript -->
+            <!-- Trade content will be inserted here by JavaScript -->
         </div>
     </main>
 
@@ -260,9 +266,11 @@ function generateTrade() {
     const username = generateRandomUsername();
     const offering = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
     const requesting = Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
+    const profit = offering - requesting;
 
     let offeringText = `Offering: ฿${formatNumber(offering)}`;
     let requestingText = `Requesting: ฿${formatNumber(requesting)}`;
+    let profitText = `Profit: <span class="${profit >= 0 ? 'profit-positive' : 'profit-negative'}">${formatNumber(profit)}</span>`;
 
     if (offering > requesting) {
         offeringText = `<span class="offering">${offeringText}</span>`;
@@ -276,8 +284,9 @@ function generateTrade() {
         <h2>${username}</h2>
         <p>${offeringText}</p>
         <p>${requestingText}</p>
+        <p>${profitText}</p>
         <div class="trade-buttons">
-            <button onclick="acceptTrade(${offering - requesting})">Accept</button>
+            <button class="accept" onclick="acceptTrade(${profit})">Accept</button>
             <button class="decline" onclick="generateTrade()">Decline</button>
         </div>
     `;
@@ -287,20 +296,22 @@ function generateTrade() {
 function generateRandomUsername() {
     const prefixes = ['Cool', 'Sweet', 'Epic', 'Fast'];
     const suffixes = ['Monkey', 'Darren', 'Gamer', 'Player'];
-    const number = Math.floor(Math.random() * 100) + 1;
-    return `${prefixes[Math.floor(Math.random() * prefixes.length)]}${suffixes[Math.floor(Math.random() * suffixes.length)]}${number}`;
+    const number = Math.floor(Math.random() * 100);
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+    return `${prefix}${suffix}${number}`;
 }
 
-// Function to handle trade acceptance
-function acceptTrade(amount) {
-    const currentBux = parseInt(getCookie('bux')) || 0;
-    const newBux = currentBux + amount;
-    setCookie('bux', newBux, 4); // Update Bux cookie for 4 days
-
+// Function to handle accepting a trade
+function acceptTrade(profit) {
+    const bux = getCookie('bux') ? parseInt(getCookie('bux')) : 0;
+    const newBux = bux + profit;
+    setCookie('bux', newBux, 4); // Set cookie for 4 days
     generateTrade(); // Generate a new trade
 }
 
-// Initialize the page with authentication and trades
+// Initialize the page
 document.addEventListener('DOMContentLoaded', handleAuthButtons);
+
     </script>
 </html>
