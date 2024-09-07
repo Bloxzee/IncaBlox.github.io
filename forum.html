@@ -115,7 +115,6 @@
             cursor: pointer;
             font-size: 1em;
             font-weight: bold;
-            border-radius: 5px;
         }
 
         .forum-posts {
@@ -130,7 +129,6 @@
         .forum-post {
             background-color: #292929;
             padding: 15px;
-            border-radius: 5px;
             border: 1px solid #333;
             position: relative;
         }
@@ -165,7 +163,6 @@
             background-color: #1e1e1e;
             border: 1px solid #333;
             padding: 20px;
-            border-radius: 5px;
             z-index: 1000;
         }
 
@@ -173,24 +170,31 @@
             margin-top: 0;
         }
 
-        .popup label {
-            display: block;
-            margin-top: 10px;
-        }
-
-        .popup input, .popup textarea {
+        .popup input,
+        .popup textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #333;
-            border-radius: 5px;
-            background-color: #292929;
+            background-color: #1e1e1e;
             color: #e0e0e0;
         }
 
         .popup button {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .popup button.submit-btn {
+            background-color: #ff6600;
+            color: #fff;
+        }
+
+        .popup button.cancel-btn {
+            background-color: #444;
+            color: #e0e0e0;
         }
 
         .overlay {
@@ -202,12 +206,6 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
             z-index: 999;
-        }
-
-        .popup .success-message {
-            display: none;
-            color: #4caf50;
-            font-weight: bold;
         }
 
         /* Footer Styles */
@@ -270,20 +268,30 @@
         <label for="postTitle">Title:</label>
         <input type="text" id="postTitle" placeholder="Enter title" /><br /><br />
         <label for="postContent">Content:</label><br />
-        <textarea id="postContent" placeholder="Enter content" rows="4"></textarea><br /><br />
-        <button onclick="submitPost()">Submit</button>
-        <button onclick="closePopup()">Cancel</button>
-        <div class="success-message" id="successMessage">Post added successfully!</div>
+        <textarea id="postContent" placeholder="Enter content" rows="4" cols="40"></textarea><br /><br />
+        <button class="submit-btn" onclick="submitPost()">Submit</button>
+        <button class="cancel-btn" onclick="closePopup()">Cancel</button>
     </div>
 
     <!-- JavaScript for Forum Handling -->
     <script>
-let postCount = 0; // Counter to track the number of posts
-
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+// Function to set a cookie
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}; path=/`;
+}
+
+// Function to delete a cookie
+function deleteCookie(name) {
+    setCookie(name, '', -1);
 }
 
 // Function to handle authentication buttons
@@ -333,11 +341,6 @@ function closePopup() {
 
 // Function to submit a new post
 function submitPost() {
-    if (postCount >= 3) {
-        alert('You can only add up to 3 posts.');
-        return;
-    }
-
     const title = document.getElementById('postTitle').value;
     const content = document.getElementById('postContent').value;
 
@@ -357,18 +360,8 @@ function submitPost() {
         document.getElementById('postTitle').value = '';
         document.getElementById('postContent').value = '';
 
-        // Increase post count
-        postCount++;
-
         closePopup(); // Close the popup
         startReplyCounter(postDiv.querySelector('.reply-counter')); // Start the reply counter
-
-        // Show success message
-        const successMessage = document.getElementById('successMessage');
-        successMessage.style.display = 'block';
-        setTimeout(() => {
-            successMessage.style.display = 'none';
-        }, 2000); // Hide after 2 seconds
     } else {
         alert('Please fill in both title and content.');
     }
