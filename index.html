@@ -208,15 +208,15 @@
         <!-- Counters Section -->
         <section class="counters">
             <div class="counter-card">
-                <h2>18,284,243</h2>
+                <h2 id="total-accounts">0</h2>
                 <p>Total Accounts</p>
             </div>
             <div class="counter-card">
-                <h2>193,817,646</h2>
+                <h2 id="games-played">0</h2>
                 <p>Games Played</p>
             </div>
             <div class="counter-card">
-                <h2>฿240,589,990</h2>
+                <h2 id="bux-spent">0</h2>
                 <p>Bux Spent</p>
             </div>
         </section>
@@ -229,64 +229,81 @@
 
     <!-- JavaScript for Cookie Handling and Counter Animation -->
     <script>
-// Function to get a cookie by name
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-}
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
 
-// Function to set a cookie
-function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
-    let expires = `expires=${d.toUTCString()}`;
-    document.cookie = `${name}=${value}; ${expires}; path=/`;
-}
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            let expires = `expires=${d.toUTCString()}`;
+            document.cookie = `${name}=${value}; ${expires}; path=/`;
+        }
 
-// Function to delete a cookie
-function deleteCookie(name) {
-    setCookie(name, '', -1);
-}
+        // Function to delete a cookie
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
 
-// Function to handle authentication buttons
-function handleAuthButtons() {
-    const username = getCookie('username');
-    const bux = getCookie('bux');
-    const authButtonsDiv = document.getElementById('auth-buttons');
+        // Function to handle authentication buttons
+        function handleAuthButtons() {
+            const username = getCookie('username');
+            const bux = getCookie('bux');
+            const authButtonsDiv = document.getElementById('auth-buttons');
 
-    if (username) {
-        // User is logged in
-        authButtonsDiv.innerHTML = `
-            <button class="logout-btn" onclick="logout()">Logout</button>
-            <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
-        `;
-    } else {
-        // User is not logged in
-        authButtonsDiv.innerHTML = `
-            <button class="login-btn" onclick="window.location.href='/login'">Login</button>
-            <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
-        `;
-    }
-}
+            if (username) {
+                // User is logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                    <div>Bux: ฿${bux ? formatNumber(bux) : '-'}</div>
+                `;
+            } else {
+                // User is not logged in
+                authButtonsDiv.innerHTML = `
+                    <button class="login-btn" onclick="window.location.href='/login'">Login</button>
+                    <button class="signup-btn" onclick="window.location.href='/signup'">Sign Up</button>
+                `;
+            }
+        }
 
-// Logout function
-function logout() {
-    deleteCookie('username');
-    deleteCookie('bux');
-    handleAuthButtons(); // Update buttons after logout
-}
+        // Logout function
+        function logout() {
+            deleteCookie('username');
+            deleteCookie('bux');
+            handleAuthButtons(); // Update buttons after logout
+        }
 
-// Function to format numbers with commas
-function formatNumber(number) {
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+        // Function to format numbers with commas
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
 
-// Call the function to handle authentication buttons on page load
-document.addEventListener('DOMContentLoaded', () => {
-    handleAuthButtons();
-});
+        // Function to update counters
+        function updateCounters() {
+            const startUnix = 1725707156; // Given Unix timestamp
+            const nowUnix = Math.floor(Date.now() / 1000); // Current Unix timestamp
 
+            // Calculate differences
+            const totalAccounts = (nowUnix - startUnix) * 52;
+            const gamesPlayed = (nowUnix - startUnix) * 659;
+            const buxSpent = (nowUnix - startUnix) * 1388;
 
+            // Update counters with formatted numbers
+            document.getElementById('total-accounts').textContent = formatNumber(totalAccounts);
+            document.getElementById('games-played').textContent = formatNumber(gamesPlayed);
+            document.getElementById('bux-spent').textContent = formatNumber(buxSpent);
+        }
+
+        // Call the function to handle authentication buttons and update counters on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            handleAuthButtons();
+            updateCounters();
+        });
     </script>
-    </html>
+</body>
+
+</html>
