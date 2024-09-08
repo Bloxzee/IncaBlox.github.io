@@ -224,13 +224,16 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
-        // Function to set a cookie
-        function setCookie(name, value, days) {
+// Function to set a cookie with a two-month expiration
+        function setCookie(name, value, months) {
             const d = new Date();
-            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            d.setTime(d.getTime() + (months * 30 * 24 * 60 * 60 * 1000)); // 30 days in a month
             let expires = `expires=${d.toUTCString()}`;
             document.cookie = `${name}=${value}; ${expires}; path=/`;
-        }
+}
+
+// Example usage: set a cookie to expire in two months
+setCookie('DataUsage', 'https://github.com', 2);
 
         // Function to delete a cookie
         function deleteCookie(name) {
