@@ -284,13 +284,13 @@
 
         // Function to update counters
         function updateCounters() {
-            const startUnix = 1725708100; // Given Unix timestamp
+            const startUnix = 1726030806; // Given Unix timestamp
             const nowUnix = Math.floor(Date.now() / 1000); // Current Unix timestamp
 
             // Calculate differences
-            const totalAccounts = (nowUnix - startUnix) * 52;
-            const gamesPlayed = (nowUnix - startUnix) * 659;
-            const buxSpent = (nowUnix - startUnix) * 1388;
+            const totalAccounts = (nowUnix - startUnix) * 94 +16769792;
+            const gamesPlayed = (nowUnix - startUnix) * 1047 +212569017;
+            const buxSpent = (nowUnix - startUnix) * 1796 +447717444;
 
             // Update counters with formatted numbers
             document.getElementById('total-accounts').textContent = formatNumber(totalAccounts);
