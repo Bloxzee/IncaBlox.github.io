@@ -217,18 +217,18 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Function to set a cookie with a 3-month expiration
+// Function to set a cookie with a custom duration in months
 function setCookie(name, value, months) {
     const d = new Date();
-    const daysInMonth = 30; // Approximate days in a month
-    d.setTime(d.getTime() + (months * daysInMonth * 24 * 60 * 60 * 1000));
+    const duration = months * 30 * 24 * 60 * 60 * 1000; // Convert months to milliseconds
+    d.setTime(d.getTime() + duration);
     const expires = `expires=${d.toUTCString()}`;
     document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
 // Function to delete a cookie
 function deleteCookie(name) {
-    setCookie(name, '', -1);
+    setCookie(name, '', -1); // Set expiration to past date
 }
 
 // Function to handle authentication buttons
