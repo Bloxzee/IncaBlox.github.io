@@ -294,8 +294,8 @@ function generateTrade() {
 
 // Function to generate a random username
 function generateRandomUsername() {
-    const prefixes = ['Cool', 'Sweet', 'Epic', 'Fast'];
-    const suffixes = ['Monkey', 'Darren', 'Gamer', 'Player'];
+    const prefixes = ['Cool', 'Sweet', 'Epic', 'Fast', 'Mighty', 'Crazy', 'Sneaky', 'Wild', 'Nifty', 'Brave'];
+    const suffixes = ['Monkey', 'Darren', 'Gamer', 'Player', 'Ninja', 'Wizard', 'Warrior', 'Beast', 'Rider', 'Ace'];
     const number = Math.floor(Math.random() * 100);
     const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
@@ -306,6 +306,13 @@ function generateRandomUsername() {
 function acceptTrade(profit) {
     const bux = getCookie('bux') ? parseInt(getCookie('bux')) : 0;
     const newBux = bux + profit;
+
+    // Check if the new Bux balance will be below -1
+    if (newBux < -1) {
+        alert("You can't accept this trade as it would take your Bux below -1.");
+        return; // Exit the function without accepting the trade
+    }
+
     setCookie('bux', newBux, 4); // Set cookie for 4 days
     updateBuxDisplay(newBux); // Update Bux display in navbar
     generateTrade(); // Generate a new trade
