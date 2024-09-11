@@ -210,17 +210,19 @@
 
     <!-- JavaScript for Trades Handling -->
     <script>
+// Function to get a cookie by name
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-// Function to set a cookie
-function setCookie(name, value, days) {
+// Function to set a cookie with a 3-month expiration
+function setCookie(name, value, months) {
     const d = new Date();
-    d.setTime(d.getTime() + (months * 30 * 24 * 60 * 60 * 1000));
-    let expires = `expires=${d.toUTCString()}`;
+    const daysInMonth = 30; // Approximate days in a month
+    d.setTime(d.getTime() + (months * daysInMonth * 24 * 60 * 60 * 1000));
+    const expires = `expires=${d.toUTCString()}`;
     document.cookie = `${name}=${value}; ${expires}; path=/`;
 }
 
@@ -252,7 +254,7 @@ function handleAuthButtons() {
 function logout() {
     deleteCookie('username');
     deleteCookie('bux');
-    handleAuthButtons(); // Update buttons after logout
+    window.location.href = '/login'; // Explicitly redirect after logging out
 }
 
 // Function to format numbers with commas
@@ -305,6 +307,12 @@ function generateRandomUsername() {
 // Function to handle accepting a trade
 function acceptTrade(profit) {
     const bux = getCookie('bux') ? parseInt(getCookie('bux')) : 0;
+
+    if (isNaN(bux)) {
+        alert("Error reading your Bux balance.");
+        return;
+    }
+
     const newBux = bux + profit;
 
     // Check if the new Bux balance will be below -1
@@ -313,14 +321,14 @@ function acceptTrade(profit) {
         return; // Exit the function without accepting the trade
     }
 
-    setCookie('bux', newBux, 4); // Set cookie for 4 days
+    setCookie('bux', newBux, 3); // Set cookie for 3 months
     updateBuxDisplay(newBux); // Update Bux display in navbar
     generateTrade(); // Generate a new trade
 }
 
 // Function to update the Bux display in the navbar
 function updateBuxDisplay(bux) {
-    const buxDiv = document.querySelector('.auth-buttons div');
+    const buxDiv = document.querySelector('#auth-buttons div'); // Corrected selector
     if (buxDiv) {
         buxDiv.innerHTML = `Bux: ฿${formatNumber(bux)}`;
     }
@@ -328,6 +336,5 @@ function updateBuxDisplay(bux) {
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', handleAuthButtons);
-
     </script>
 </html>
